@@ -292,7 +292,7 @@ public class DataMapper {
      * @param params
      * @return
      */
-    public <E, T> int executeUpdate(String sql, Object... params) {
+    public int executeUpdate(String sql, Object... params) {
         Connection con = getCon();
         try {
             logger.debug(sql);
@@ -315,7 +315,7 @@ public class DataMapper {
      * @param sqls
      * @return
      */
-    public <E, T> Object executeBatchUpdate(String sqls, Object... params) {
+    public Object executeBatchUpdate(String sqls, Object... params) {
         Connection con = getCon();
         try {
             if (sqls.indexOf(";") == -1) {
