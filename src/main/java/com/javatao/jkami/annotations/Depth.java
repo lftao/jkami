@@ -7,9 +7,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 嵌套实体查询深度，默认为2层
+ * 嵌套实体查询深度，默认为2层<br>
+ * create at 2015-09-01
  * 
- * @date 2015-09-01
  * @author tao
  */
 @Inherited

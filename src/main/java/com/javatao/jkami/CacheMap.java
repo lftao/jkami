@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 缓存类型MAP，在内存紧张是自动回收
  * 
- * @see SoftReference<V>
+ * @see SoftReference
  * @author tao
  */
 public class CacheMap<K, V> implements Map<K, V>, Serializable {
@@ -162,6 +162,7 @@ public class CacheMap<K, V> implements Map<K, V>, Serializable {
      * 定期清理被回收的数据
      * 
      * @param timerMonitor
+     *            时间
      */
     public CacheMap(int timerMonitor) {
         timerMonitor(timerMonitor);

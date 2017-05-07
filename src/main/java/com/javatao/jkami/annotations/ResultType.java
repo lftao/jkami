@@ -21,7 +21,7 @@ public @interface ResultType {
     /**
      * 返回类型
      * 
-     * @return
+     * @return 类型
      */
     Class<?> value();
 }

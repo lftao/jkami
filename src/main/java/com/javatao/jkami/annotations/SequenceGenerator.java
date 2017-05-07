@@ -7,7 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * id策略 > oracle 序列
+ * id策略 - oracle 序列
  * 
  * @author tao
  */

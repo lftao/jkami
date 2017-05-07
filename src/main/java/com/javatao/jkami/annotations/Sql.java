@@ -18,14 +18,14 @@ public @interface Sql {
     /**
      * sql 语句
      * 
-     * @return
+     * @return sql
      */
     String value();
 
     /**
      * 强制每次都查询
      * 
-     * @return
+     * @return true/false
      */
     boolean force() default false;
 }

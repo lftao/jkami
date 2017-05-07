@@ -37,7 +37,16 @@ public class SqlUtils {
         INSERT, SELECT, UPDATE
     };
 
-    public static <T> String getSqls(Class<T> clazz, TYPE type) {
+    /**
+     * 获取sql
+     * 
+     * @param clazz
+     *            class
+     * @param type
+     *            枚举TYPE
+     * @return sql
+     */
+    public static String getSqls(Class<?> clazz, TYPE type) {
         try {
             String sql = null;
             if (TYPE.SELECT.equals(type)) {
@@ -60,9 +69,10 @@ public class SqlUtils {
      * 查询sql
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return sql
      */
-    public static <T> String getSelectSqls(Class<T> clazz) {
+    public static String getSelectSqls(Class<?> clazz) {
         String key = clazz.getName();
         String keyCache = key + ".select";
         if (mapCache.containsKey(keyCache)) {
@@ -96,9 +106,10 @@ public class SqlUtils {
      * 插入sql
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return sql
      */
-    public static <T> String getInsertSqls(Class<T> clazz) {
+    public static String getInsertSqls(Class<?> clazz) {
         String key = clazz.getName();
         String keyCache = key + ".insert";
         if (mapCache.containsKey(keyCache)) {
@@ -139,9 +150,10 @@ public class SqlUtils {
      * 更新sql
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return sql
      */
-    public static <T> String getUpdateSqls(Class<T> clazz) {
+    public static String getUpdateSqls(Class<?> clazz) {
         String key = clazz.getName();
         String keyCache = key + ".update";
         if (mapCache.containsKey(keyCache)) {
@@ -169,7 +181,13 @@ public class SqlUtils {
         return out;
     }
 
-    private static <T> void initData(Class<T> clazz) {
+    /**
+     * 初始化
+     * 
+     * @param clazz
+     *            class
+     */
+    private static void initData(Class<?> clazz) {
         String k = clazz.getName();
         List<String> attrs = new ArrayList<>();
         List<String> columns = new ArrayList<>();
@@ -211,9 +229,10 @@ public class SqlUtils {
      * 获取表名
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return 表名
      */
-    public static <T> String getTableName(Class<T> clazz) {
+    public static String getTableName(Class<?> clazz) {
         String k = clazz.getName() + ".tableName";
         if (mapCache.containsKey(k)) {
             return (String) mapCache.get(k);
@@ -231,9 +250,10 @@ public class SqlUtils {
      * 获取序列名
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return 序列名字
      */
-    public static <T> String getSequenceGeneratorVal(Class<T> clazz) {
+    public static String getSequenceGeneratorVal(Class<?> clazz) {
         String k = clazz.getName() + ".SequenceGenerator";
         if (mapCache.containsKey(k)) {
             return (String) mapCache.get(k);
@@ -248,14 +268,16 @@ public class SqlUtils {
     }
 
     /**
-     * 获得主键字段<br/>
-     * [0] name<br/>
-     * [1] cloumn<br/>
-     * [2] type<br/>
+     * 获得主键字段<br>
+     * [0] name<br>
+     * [1] cloumn<br>
+     * [2] type<br>
      * 
-     * @return
+     * @param clazz
+     *            class
+     * @return 数组
      */
-    public static <T> Object[] getTableKey(Class<T> clazz) {
+    public static Object[] getTableKey(Class<?> clazz) {
         String k = clazz.getName() + ".key";
         if (mapCache.containsKey(k)) {
             return (Object[]) mapCache.get(k);
@@ -284,9 +306,10 @@ public class SqlUtils {
      * 获得实体属性
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return 属性集合
      */
-    public static <T> List<String> getEntityAttrMp(Class<T> clazz) {
+    public static List<String> getEntityAttrMp(Class<?> clazz) {
         String key = clazz.getName();
         List<String> list = entityAttrMp.get(key);
         if (list == null) {
@@ -300,9 +323,10 @@ public class SqlUtils {
      * 获得实体db字段
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return db字段集合
      */
-    public static <T> List<String> getEntityColumnMp(Class<T> clazz) {
+    public static List<String> getEntityColumnMp(Class<?> clazz) {
         String key = clazz.getName();
         List<String> list = entityColumnMp.get(key);
         if (list == null) {
@@ -315,10 +339,11 @@ public class SqlUtils {
     /**
      * 获得字段注解sql
      * 
-     * @param <T>
-     * @return
+     * @param clazz
+     *            class
+     * @return sql
      */
-    public static <T> Map<String, String> getColumnSqlMp(Class<T> clazz) {
+    public static Map<String, String> getColumnSqlMp(Class<?> clazz) {
         String key = clazz.getName();
         if (!columnSqlMp.containsKey(key)) {
             initData(clazz);
@@ -329,10 +354,11 @@ public class SqlUtils {
     /**
      * sql强制查询
      * 
-     * @param <T>
-     * @return
+     * @param key
+     *            key
+     * @return ture/false
      */
-    public static <T> Boolean getSqlForce(String key) {
+    public static Boolean getSqlForce(String key) {
         Boolean force = sqlforce.get(key);
         if (force == null) {
             force = false;
@@ -344,9 +370,10 @@ public class SqlUtils {
      * 获得属性和注解map
      * 
      * @param clazz
+     *            class
      * @return key属性 value注解
      */
-    public static <T> Map<String, String> getEntityFiledColumnMap(Class<T> clazz) {
+    public static Map<String, String> getEntityFiledColumnMap(Class<?> clazz) {
         String k = clazz.getName() + ".filedColMp";
         if (mapCache.containsKey(k)) {
             return (Map<String, String>) mapCache.get(k);
@@ -383,9 +410,10 @@ public class SqlUtils {
      * 获得属性和注解map
      * 
      * @param clazz
+     *            class
      * @return key属性 value注解
      */
-    public static <T> Map<String, String> getEntityColumnFiledMap(Class<T> clazz) {
+    public static Map<String, String> getEntityColumnFiledMap(Class<?> clazz) {
         String k = clazz.getName() + ".colFiledMp";
         if (mapCache.containsKey(k)) {
             return (Map<String, String>) mapCache.get(k);
@@ -402,18 +430,34 @@ public class SqlUtils {
     /**
      * 获取搜索参数
      * 
-     * @param pg
-     * @return
+     * @param classType
+     *            calss
+     * @param page
+     *            Page
+     * @param params
+     *            结果参数
+     * @return sql
      */
-    public static String getSearchParames(Class<?> classType, Page<?> pg, List<Object> params) {
-        List<SearchFilter> filters = pg.getSearchFilter();
+    public static String getSearchParames(Class<?> classType, Page<?> page, List<Object> params) {
+        List<SearchFilter> filters = page.getSearchFilter();
         String query = getSearchParames(classType, filters, params);
-        if (isNotBlank(pg.getOrder())) {
-            query.concat("  order by " + pg.getOrder());
+        if (isNotBlank(page.getOrder())) {
+            query.concat("  order by " + page.getOrder());
         }
         return query;
     }
 
+    /**
+     * 获取搜索参数
+     * 
+     * @param classType
+     *            calss
+     * @param filters
+     *            参数
+     * @param params
+     *            结果参数
+     * @return sql
+     */
     public static String getSearchParames(Class<?> classType, List<SearchFilter> filters, List<Object> params) {
         StringBuilder sb = new StringBuilder();
         if (filters != null) {
@@ -458,6 +502,13 @@ public class SqlUtils {
         return sb.toString();
     }
 
+    /**
+     * 判断是否为空
+     * 
+     * @param s
+     *            字符串
+     * @return 结果
+     */
     private static boolean isNotBlank(String s) {
         if (s == null || "".equals(s.trim())) {
             return false;
@@ -465,6 +516,13 @@ public class SqlUtils {
         return true;
     }
 
+    /**
+     * 获取col
+     * 
+     * @param col
+     *            字符
+     * @return col
+     */
     private static String getCol(String col) {
         if (DataMapper.DATABSE_TYPE_ORACLE.equalsIgnoreCase(RunConfing.getConfig().getDbType())) {
             return "\"" + col.toUpperCase() + "\"";
@@ -473,7 +531,15 @@ public class SqlUtils {
         }
     }
 
-    // 数组
+    /**
+     * 拼接字符串
+     * 
+     * @param cols
+     *            参数值
+     * @param params
+     *            结果值
+     * @return 字符串
+     */
     private static String joinCollect(Object cols, List<Object> params) {
         StringBuilder sbf = new StringBuilder();
         if (cols instanceof Collection) {
@@ -498,7 +564,9 @@ public class SqlUtils {
     /**
      * sql参数转义
      * 
-     * @return
+     * @param str
+     *            入参
+     * @return 转以后
      */
     public static String escapeSql(String str) {
         if (str == null) {

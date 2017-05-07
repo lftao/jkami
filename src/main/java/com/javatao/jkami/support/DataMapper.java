@@ -64,14 +64,30 @@ public class DataMapper {
     private static final Pattern pat = Pattern.compile(":[ tnx0Bfr]*[a-z.A-Z]+");
     private static final String numberRegex = "^:\\d+$";
 
+    /**
+     * 获取 Connection
+     * 
+     * @return Connection
+     */
     private Connection getCon() {
         return RunConfing.getConfig().getConnection();
     }
 
+    /**
+     * 释放连接
+     * 
+     * @param con
+     *            Connection
+     */
     private void doReleaseConnection(Connection con) {
         RunConfing.getConfig().doReleaseConnection(con);
     }
 
+    /**
+     * 获取 DataMapper 单例
+     * 
+     * @return DataMapper
+     */
     public static DataMapper getMapper() {
         if (mapper == null) {
             mapper = new DataMapper();
@@ -83,8 +99,11 @@ public class DataMapper {
      * 设置预编译值
      * 
      * @param ps
+     *            PreparedStatement
      * @param args
+     *            参数
      * @throws SQLException
+     *             SQLException
      */
     private void setPSValue(PreparedStatement ps, Object... args) throws SQLException {
         if (args != null && args.length > 0) {
@@ -110,7 +129,10 @@ public class DataMapper {
      * 设置预编译值
      * 
      * @param ps
+     *            PreparedStatement
      * @param entity
+     *            实体
+     * @return 字段数量
      */
     private int setPSEntityValue(PreparedStatement ps, Object entity) {
         try {
@@ -136,8 +158,13 @@ public class DataMapper {
         }
     }
 
-    public <T> void bathSave(List<T> entitys) {}
-
+    /**
+     * 保存对象
+     * 
+     * @param o
+     *            对象
+     * @return 变更值
+     */
     public int save(Object o) {
         RunConfing config = RunConfing.getConfig();
         Connection con = config.getConnection();
@@ -181,7 +208,23 @@ public class DataMapper {
         }
     }
 
-    // 查询结果
+    /**
+     * 查询结果
+     * 
+     * @param <T>
+     *            实体类型
+     * @param sql
+     *            sql
+     * @param result
+     *            类型
+     * @param currentDepth
+     *            当前深度
+     * @param maxDepth
+     *            最大深度
+     * @param params
+     *            参数
+     * @return 结果
+     */
     public <T> T queryForObject(String sql, Class<T> result, int currentDepth, int maxDepth, Object... params) {
         List<T> list = query(sql, new BeanListHandle<>(result, currentDepth, maxDepth), params);
         if (list != null) {
@@ -195,8 +238,20 @@ public class DataMapper {
         return null;
     }
 
-    // 查询结果
-    public <E, T> E query(String sql, ResultHandle<E> handle, Object... params) {
+    /**
+     * 查询结果
+     * 
+     * @param <E>
+     *            返回类型
+     * @param sql
+     *            sql
+     * @param handle
+     *            处理器
+     * @param params
+     *            参数
+     * @return 结果
+     */
+    public <E> E query(String sql, ResultHandle<E> handle, Object... params) {
         Connection con = getCon();
         try {
             logger.debug(sql);
@@ -213,6 +268,17 @@ public class DataMapper {
         }
     }
 
+    /**
+     * 查找单个
+     * 
+     * @param <T>
+     *            实体类型
+     * @param result
+     *            结果类型
+     * @param sqlParameter
+     *            sql parameter
+     * @return 结果
+     */
     public <T> T findOne(Class<T> result, Map<String, Object> sqlParameter) {
         Connection con = getCon();
         StringBuilder sb = new StringBuilder(SqlUtils.getSqls(result, SqlUtils.TYPE.SELECT));
@@ -239,21 +305,28 @@ public class DataMapper {
     }
 
     /**
-     * 查询返回List<Map<Object, Object>>
+     * 查询返回
      * 
      * @param sql
-     * @return
+     *            sql
+     * @param params
+     *            参数
+     * @return 结果集合
      */
-    public <T> List<Map<String, Object>> queryForMap(String sql, Object... params) {
+    public List<Map<String, Object>> queryForMap(String sql, Object... params) {
         return query(sql, new MapListHandle(), params);
     }
 
     /**
      * 根据id查找 对象
      * 
+     * @param <T>
+     *            实体类型
      * @param id
+     *            ID
      * @param classType
-     * @return
+     *            参数
+     * @return 结果
      */
     public <T> T findById(Serializable id, Class<T> classType) {
         Connection con = getCon();
@@ -273,6 +346,15 @@ public class DataMapper {
         }
     }
 
+    /**
+     * 更新实体
+     * 
+     * @param <T>
+     *            实体类型
+     * @param o
+     *            实体
+     * @return 变更值
+     */
     public <T> int updateById(T o) {
         Class<?> classType = o.getClass();
         String sql = SqlUtils.getSqls(classType, SqlUtils.TYPE.UPDATE);
@@ -289,8 +371,10 @@ public class DataMapper {
      * 执行 更新
      * 
      * @param sql
+     *            sql
      * @param params
-     * @return
+     *            参数
+     * @return 变更值
      */
     public int executeUpdate(String sql, Object... params) {
         Connection con = getCon();
@@ -313,7 +397,10 @@ public class DataMapper {
      * 批量执行
      * 
      * @param sqls
-     * @return
+     *            sql集合
+     * @param params
+     *            参数
+     * @return 变更集合
      */
     public Object executeBatchUpdate(String sqls, Object... params) {
         Connection con = getCon();
@@ -340,12 +427,16 @@ public class DataMapper {
     }
 
     /**
-     * 根据 id 删除 <br/>
+     * 根据 id 删除 <br>
      * delete from tabel where id=?
      * 
+     * @param <T>
+     *            实体类型
      * @param id
+     *            id
      * @param classType
-     * @return
+     *            类型
+     * @return 变更值
      */
     public <T> int deleteById(Serializable id, Class<T> classType) {
         Object[] key = SqlUtils.getTableKey(classType);
@@ -360,9 +451,10 @@ public class DataMapper {
      * 更新非空
      * 
      * @param <T>
+     *            泛型
      * @param o
-     * @param dataSource
-     * @return
+     *            对象
+     * @return 变更值
      */
     public <T> int updateNotNullById(T o) {
         Class<?> classType = o.getClass();
@@ -392,9 +484,15 @@ public class DataMapper {
     /**
      * 分页查询
      * 
+     * @param <T>
+     *            泛型
+     * @param sql
+     *            sql
      * @param classType
+     *            类型
      * @param page
-     * @return
+     *            分页参数
+     * @return 分页实例
      */
     public <T> Page<T> findPage(String sql, Class<T> classType, Page<T> page) {
         if (page == null) {
@@ -429,11 +527,14 @@ public class DataMapper {
      * @param dbType
      *            数据库类型
      * @param sql
+     *            sql
      * @param page
      *            页数
      * @param rows
      *            每页数
-     * @return
+     * @param params
+     *            参数
+     * @return 分页sql
      */
     public static String createPageSql(String dbType, String sql, int page, int rows, ArrayList<Object> params) {
         int beginNum = (page - 1) * rows;
@@ -462,10 +563,17 @@ public class DataMapper {
     }
 
     /**
-     * 组装占位符参数 -> Map
+     * 组装占位符参数 - Map
      * 
      * @param executeSql
-     * @return
+     *            执行的sql
+     * @param sqlParamsMap
+     *            参数
+     * @param result
+     *            结果参数
+     * @param k
+     *            拓展参数
+     * @return 解析后sql
      */
     public String placeholderSqlParam(String executeSql, Map<String, Object> sqlParamsMap, List<Object> result, String... k) {
         String key = EMPTY;
@@ -489,10 +597,15 @@ public class DataMapper {
     }
 
     /**
-     * 组装占位符参数 -> Map
+     * 组装占位符参数 - Map
      * 
      * @param executeSql
-     * @return
+     *            执行的sql
+     * @param result
+     *            结果参数
+     * @param value
+     *            值
+     * @return 解析后sql
      */
     public String placeholderSqlParam(String executeSql, List<Object> result, Object value) {
         Map<String, Object> sqlParamsMap = new HashMap<>();

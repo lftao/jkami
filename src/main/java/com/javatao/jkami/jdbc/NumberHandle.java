@@ -9,7 +9,6 @@ import org.springframework.jdbc.support.JdbcUtils;
  * 数字 结果
  * 
  * @author tao
- * @param <T>
  */
 public class NumberHandle<T> implements ResultHandle<Long> {
     @Override

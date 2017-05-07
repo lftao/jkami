@@ -23,7 +23,7 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 总数
      * 
-     * @return
+     * @return 总数
      */
     public Long getTotal() {
         return total;
@@ -32,7 +32,8 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 总数
      * 
-     * @return
+     * @param total
+     *            总数
      */
     public void setTotal(Long total) {
         this.total = total;
@@ -41,7 +42,7 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 当前页
      * 
-     * @return
+     * @return 当前页
      */
     public Integer getPage() {
         return page;
@@ -50,7 +51,8 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 当前页
      * 
-     * @param size
+     * @param page
+     *            页数
      */
     public void setPage(Integer page) {
         if (page == null || page <= 0) {
@@ -62,7 +64,7 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 每页数量
      * 
-     * @return
+     * @return 每页数量
      */
     public Integer getSize() {
         if (size == null) {
@@ -75,6 +77,7 @@ public class Page<T> implements java.io.Serializable {
      * 每页数量
      * 
      * @param size
+     *            每页数量
      */
     public void setSize(Integer size) {
         if (size != null) {
@@ -85,7 +88,7 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 结果集
      * 
-     * @return
+     * @return 结果集合
      */
     public List<T> getRows() {
         if (rows == null) {
@@ -101,7 +104,7 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 排序
      * 
-     * @return
+     * @return 排序
      */
     public String getOrder() {
         return order;
@@ -111,6 +114,7 @@ public class Page<T> implements java.io.Serializable {
      * 排序
      * 
      * @param order
+     *            排序
      */
     public void setOrder(String order) {
         this.order = order;
@@ -119,7 +123,7 @@ public class Page<T> implements java.io.Serializable {
     /**
      * 检索条件
      * 
-     * @return
+     * @return 获取检索条件
      */
     public List<SearchFilter> getSearchFilter() {
         return searchFilter;
@@ -129,11 +133,18 @@ public class Page<T> implements java.io.Serializable {
      * 检索条件
      * 
      * @param searchFilter
+     *            设置检索条件
      */
     public void setSearchFilter(List<SearchFilter> searchFilter) {
         this.searchFilter = searchFilter;
     }
 
+    /**
+     * 添加检索条件
+     * 
+     * @param searchFilter
+     *            条件
+     */
     public void addFilter(SearchFilter searchFilter) {
         getSearchFilter().add(searchFilter);
     }

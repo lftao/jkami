@@ -13,7 +13,6 @@ import org.springframework.jdbc.support.JdbcUtils;
  * MapListHandle
  * 
  * @author tao
- * @param <T>
  */
 public class MapListHandle implements ResultHandle<List<Map<String, Object>>> {
     private final static String RWN = "rownum_";

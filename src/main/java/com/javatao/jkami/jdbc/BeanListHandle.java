@@ -22,7 +22,7 @@ import com.javatao.jkami.utils.JkBeanUtils.PsKey;
  * list 结果集
  * 
  * @author tao
- * @param <T>
+ * @param <T> 泛型
  */
 public class BeanListHandle<T> implements ResultHandle<List<T>> {
     private static final Log logger = LogFactory.getLog(BeanListHandle.class);

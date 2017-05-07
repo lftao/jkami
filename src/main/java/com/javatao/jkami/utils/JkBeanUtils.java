@@ -43,7 +43,10 @@ public class JkBeanUtils {
      * 获得对象的属性类型
      * 
      * @param o
+     *            对象
      * @param property
+     *            属性
+     * @return 属性类型
      */
     public static Class<?> getPropertyType(Object o, String property) {
         Class<?> clas = o.getClass();
@@ -55,7 +58,10 @@ public class JkBeanUtils {
      * 获取属性值
      * 
      * @param o
+     *            对象
      * @param property
+     *            属性
+     * @return 属性值
      */
     public static Object getPropertyValue(Object o, String property) {
         try {
@@ -70,8 +76,10 @@ public class JkBeanUtils {
      * 获取 PropertyDescriptor
      * 
      * @param o
+     *            对象
      * @param property
-     * @return
+     *            属性
+     * @return PropertyDescriptor
      */
     public static PropertyDescriptor getPropertyDescriptor(Object o, String property) {
         try {
@@ -107,8 +115,12 @@ public class JkBeanUtils {
      * 设置参数值
      * 
      * @param o
+     *            对象
      * @param property
+     *            属性
      * @param value
+     *            值
+     * @return 对象
      */
     public static Object setProperty(Object o, String property, Object value) {
         try {
@@ -215,12 +227,26 @@ public class JkBeanUtils {
      * 获得Field 包含父类
      * 
      * @param clazz
-     * @return
+     *            class
+     * @param name
+     *            名字
+     * @return Field
      */
     public static Field getObjField(Class<?> clazz, String name) {
         return getObjField(clazz, name, 1);
     }
 
+    /**
+     * 获得Field 包含父类
+     * 
+     * @param clazz
+     *            class
+     * @param name
+     *            名字
+     * @param n
+     *            层数
+     * @return Field
+     */
     private static Field getObjField(Class<?> clazz, String name, int n) {
         String key = clazz.getName().concat(POINT + name);
         Field field = classFiledCacheMp.get(key);
@@ -238,6 +264,7 @@ public class JkBeanUtils {
      * 初始化加载 clazz-field
      * 
      * @param clazz
+     *            class
      */
     private static void initFileCache(Class<?> clazz) {
         List<Field> allFields = getAllFields(clazz);
@@ -252,7 +279,8 @@ public class JkBeanUtils {
      * 获得所有 Field 包含父类
      * 
      * @param clazz
-     * @return
+     *            class
+     * @return field 集合
      */
     public static List<Field> getAllFields(Class<?> clazz) {
         List<Field> allField = new ArrayList<>();
@@ -268,10 +296,12 @@ public class JkBeanUtils {
     }
 
     /**
-     * 首字母大写
+     * 首字母大写 <br>
+     * user - User
      * 
      * @param column
-     * @return user > User
+     *            字符
+     * @return 结果
      */
     public static String firstToHump(String column) {
         if (isBlank(column)) {
@@ -285,7 +315,8 @@ public class JkBeanUtils {
      * 首字母小写
      * 
      * @param column
-     * @return
+     *            字符
+     * @return 结果
      */
     public static String firstToMix(String column) {
         if (isBlank(column)) {
@@ -296,10 +327,12 @@ public class JkBeanUtils {
     }
 
     /**
-     * 字段转驼峰命名
+     * 字段转驼峰命名 <br>
+     * user_name - userName
      * 
      * @param column
-     * @return user_name > userName
+     *            字符
+     * @return 结果
      */
     public static String columnToHump(String column) {
         if (isBlank(column)) {
@@ -327,18 +360,27 @@ public class JkBeanUtils {
      * map 返回 实体
      * 
      * @param map
+     *            map
      * @param classz
-     *            or object
-     * @return
+     *            class or object
+     * @return 对象
      */
-    public static <T> Object mapToObject(Map<String, Object> map, Object classz) {
+    public static Object mapToObject(Map<String, Object> map, Object classz) {
         return mapToObject(map, classz, null);
     }
 
     /**
      * map 返回 实体
+     * 
+     * @param map
+     *            map
+     * @param classz
+     *            class
+     * @param psKey
+     *            key助理
+     * @return 对象
      */
-    public static <T> Object mapToObject(Map<String, Object> map, Object classz, PsKey psKey) {
+    public static Object mapToObject(Map<String, Object> map, Object classz, PsKey psKey) {
         Object obj = classz;
         if (classz instanceof Class) {
             try {
@@ -369,19 +411,25 @@ public class JkBeanUtils {
     /**
      * map 返回 实体
      * 
+     * @param <T>
+     *            泛型
      * @param map
+     *            map
      * @param classz
-     * @return
+     *            class
+     * @return 对象
      */
     public static <T> T mapToBean(Map<String, Object> map, Class<T> classz) {
         return (T) mapToObject(map, classz);
     }
 
     /**
-     * 字段转驼峰命名
+     * 字段转驼峰命名 <br>
+     * userName - user_name
      * 
      * @param column
-     * @return userName > user_name
+     *            字符
+     * @return 结果
      */
     public static String columnToHumpReversal(String column) {
         StringBuilder result = new StringBuilder();
@@ -398,6 +446,10 @@ public class JkBeanUtils {
 
     /**
      * 判断段是否是数字
+     * 
+     * @param str
+     *            字符
+     * @return true/false
      */
     public static boolean isNumber(String str) {
         return numberPattern.matcher(str).matches();
@@ -405,6 +457,10 @@ public class JkBeanUtils {
 
     /**
      * 是否是实体
+     * 
+     * @param clz
+     *            class
+     * @return true/false
      */
     public static boolean isBeanClass(Class<?> clz) {
         try {
@@ -426,7 +482,8 @@ public class JkBeanUtils {
      * 判断的包装类
      * 
      * @param clz
-     * @return
+     *            class
+     * @return true/false
      */
     public static boolean isWrapClass(Class<?> clz) {
         try {
@@ -438,6 +495,10 @@ public class JkBeanUtils {
 
     /**
      * 判断的是否为空
+     * 
+     * @param s
+     *            字符串
+     * @return 是否为空
      */
     public static boolean isBlank(String s) {
         if (s == null || EMPTY.equals(s.trim())) {
@@ -450,7 +511,8 @@ public class JkBeanUtils {
      * 返回 maxDepth default 3
      * 
      * @param classType
-     * @return
+     *            class
+     * @return 最大深度
      */
     public static int getMaxDepth(Class<?> classType) {
         int maxDepth = 2;
