@@ -41,6 +41,7 @@ public class DataMapper {
     private static final Log logger = LogFactory.getLog(DataMapper.class);
     private static final String DEFAULT_BEAN = "defaultBean";
     private static final String EMPTY = "";
+    private static final String SEMICOLON = ";";
     /**
      * 数据库类型
      */
@@ -405,16 +406,21 @@ public class DataMapper {
     public Object executeBatchUpdate(String sqls, Object... params) {
         Connection con = getCon();
         try {
-            if (sqls.indexOf(";") == -1) {
+            if (sqls.indexOf(SEMICOLON) == -1) {
                 return executeUpdate(sqls, params);
             }
-            String[] sqlss = sqls.replaceAll("\r|\n", EMPTY).split(";");
+            String[] sqlss = sqls.replaceAll("\r|\n", EMPTY).split(SEMICOLON);
             int length = sqlss.length;
             Statement st = con.createStatement();
             for (int i = 0; i < length; i++) {
                 String sql = sqlss[i];
-                logger.debug(sql);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("addBatch: " + sql);
+                }
                 st.addBatch(sql);
+            }
+            if (logger.isDebugEnabled()) {
+                logger.debug("executeBatchUpdate size: " + length);
             }
             int[] batch = st.executeBatch();
             st.close();
