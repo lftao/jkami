@@ -255,7 +255,9 @@ public class DataMapper {
     public <E> E query(String sql, ResultHandle<E> handle, Object... params) {
         Connection con = getCon();
         try {
-            logger.debug(sql);
+            if (logger.isDebugEnabled()) {
+                logger.debug(sql);
+            }
             PreparedStatement ps = con.prepareStatement(sql);
             setPSValue(ps, params);
             ResultSet rs = ps.executeQuery();
@@ -380,7 +382,9 @@ public class DataMapper {
     public int executeUpdate(String sql, Object... params) {
         Connection con = getCon();
         try {
-            logger.debug(sql);
+            if (logger.isDebugEnabled()) {
+                logger.debug(sql);
+            }
             PreparedStatement ps = con.prepareStatement(sql);
             ps.addBatch(sql);
             setPSValue(ps, params);
