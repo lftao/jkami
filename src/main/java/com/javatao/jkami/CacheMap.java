@@ -159,19 +159,23 @@ public class CacheMap<K, V> implements Map<K, V>, Serializable {
     }
 
     /**
+     * 缓存类型MAP，在内存紧张是自动回收<br>
      * 定期清理被回收的数据
      * 
      * @param timerMonitor
-     *            时间
+     *            检测回收间隔时间
      */
     public CacheMap(int timerMonitor) {
         timerMonitor(timerMonitor);
     }
 
-    // 构造方法
+    /**
+     * 缓存类型MAP，在内存紧张是自动回收<br>
+     * 定期清理被回收的数据
+     */
     public CacheMap() {
         super();
-        timerMonitor(60 * 1000 * 5);
+        timerMonitor(60 * 1000 * 30);
     }
 
     // 定期清理被回收的数据

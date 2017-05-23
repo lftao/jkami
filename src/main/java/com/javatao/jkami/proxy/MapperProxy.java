@@ -31,8 +31,12 @@ import com.javatao.jkami.utils.FKParse;
 import com.javatao.jkami.utils.JkBeanUtils;
 import com.javatao.jkami.utils.SqlUtils;
 
-@SuppressWarnings("rawtypes")
-public class MapperProxy extends KaMiDaoImpl implements InvocationHandler, Serializable, InitializingBean {
+/**
+ * 代理处理类
+ * 
+ * @author tao
+ */
+public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler, Serializable, InitializingBean {
     private static final Log logger = LogFactory.getLog(MapperProxy.class);
     private static final long serialVersionUID = -3149859725082518128L;
 
@@ -85,7 +89,7 @@ public class MapperProxy extends KaMiDaoImpl implements InvocationHandler, Seria
                 throw new JkException(method.toGenericString() + " @Param not find ");
             }
             if (arg instanceof Map) {
-                Map<String, Object> mmp = (Map) arg;
+                Map<String, Object> mmp = (Map<String, Object>) arg;
                 for (Entry<String, Object> entry : mmp.entrySet()) {
                     Object val = entry.getValue();
                     if (val instanceof String) {
@@ -113,7 +117,7 @@ public class MapperProxy extends KaMiDaoImpl implements InvocationHandler, Seria
      * @return
      */
     private Object runTemplate(Method method, Map<String, Object> paramMap) {
-        Class _interface = this.getMapperInterface();
+        Class<?> _interface = this.getMapperInterface();
         String packageNme = _interface.getPackage().getName();
         String simpleName = _interface.getSimpleName();
         String methodName = method.getName();
@@ -171,7 +175,7 @@ public class MapperProxy extends KaMiDaoImpl implements InvocationHandler, Seria
             return DataMapper.getMapper().executeBatchUpdate(sql, params);
         }
         int maxDepth = JkBeanUtils.getMaxDepth(returnType);
-        List resultQuery = DataMapper.getMapper().query(sql, new BeanListHandle<>(returnType, 1, maxDepth), params);
+        List<?> resultQuery = DataMapper.getMapper().query(sql, new BeanListHandle<>(returnType, 1, maxDepth), params);
         if (resultQuery == null) {
             return null;
         }
@@ -200,7 +204,6 @@ public class MapperProxy extends KaMiDaoImpl implements InvocationHandler, Seria
         super();
     }
 
-    @SuppressWarnings("unchecked")
     public void setResultType(Class<?> resultType) {
         if (resultType != null) {
             this.setClassType(resultType);
