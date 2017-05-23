@@ -4,8 +4,6 @@ import static org.springframework.util.Assert.notNull;
 
 import java.lang.annotation.Annotation;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -29,6 +27,7 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
      * 扫描包
      */
     private String basePackage;
+    
     /**
      * 扫描注解dao
      */
@@ -46,8 +45,8 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
         confing.setDbType(dbType);
     }
 
-    public void setDataSource(DataSource dataSource) {
-        confing.setDataSource(dataSource);
+    public void setDataSourceId(String dataSourceId) {
+        confing.setDataSourceId(dataSourceId);
     }
 
     public void setLazybean(boolean lazybean) {
@@ -64,6 +63,8 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
     @Override
     public void afterPropertiesSet() throws Exception {
         notNull(this.basePackage, "Property 'basePackage' is required");
+        
+        
     }
 
     @Override

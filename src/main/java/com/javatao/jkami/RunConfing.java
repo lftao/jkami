@@ -23,6 +23,7 @@ public class RunConfing {
     private transient Boolean lazybean;
     /** sql 模板路径 */
     private transient String sqlpath;
+    private transient String dataSourceId;
 
     public String getDbType() {
         return dbType;
@@ -58,6 +59,14 @@ public class RunConfing {
     public RunConfing setSqlpath(String sqlpath) {
         this.sqlpath = sqlpath;
         return this;
+    }
+
+    public RunConfing setDataSourceId(String dataSourceId) {
+        this.dataSourceId = dataSourceId;
+        return this;
+    }
+    public String getDataSourceId() {
+        return this.dataSourceId;
     }
 
     public void bind() {

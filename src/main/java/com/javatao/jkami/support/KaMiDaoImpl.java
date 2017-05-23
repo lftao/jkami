@@ -7,8 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
+
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.javatao.jkami.Page;
 import com.javatao.jkami.RunConfing;
@@ -17,16 +20,18 @@ import com.javatao.jkami.jdbc.BeanListHandle;
 import com.javatao.jkami.utils.JkBeanUtils;
 import com.javatao.jkami.utils.SqlUtils;
 
-public class KaMiDaoImpl<T extends Serializable> implements KaMiDaoInterface<T> {
-    private DataSource dataSource;
+/**
+ * 默认接口实现类
+ * 
+ * @author tao
+ * @param <T>
+ *            类型
+ */
+public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAware {
     private Class<T> classType;
     private Class<?> mapperInterface;
     /**
-     * 数据库类型
-     */
-    /*
-     * private String dbType;
-     * private boolean lazybean = true;
+     * 运行时参数
      */
     private RunConfing confing;
 
@@ -52,19 +57,11 @@ public class KaMiDaoImpl<T extends Serializable> implements KaMiDaoInterface<T> 
     }
 
     public RunConfing getConfing() {
-        if (confing != null) {
-            confing.setDataSource(dataSource);
-        }
         return this.confing;
     }
 
     public void setConfing(RunConfing confing) {
         this.confing = confing;
-    }
-
-    @Resource
-    public final void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
     }
 
     @Override
@@ -131,10 +128,6 @@ public class KaMiDaoImpl<T extends Serializable> implements KaMiDaoInterface<T> 
         this.classType = (Class<T>) resultType;
     }
 
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
     public Class<?> getMapperInterface() {
         return mapperInterface;
     }
@@ -157,5 +150,19 @@ public class KaMiDaoImpl<T extends Serializable> implements KaMiDaoInterface<T> 
     public T queryForObject(String sql, Class<T> result, Object... parameter) {
         int maxDepth = JkBeanUtils.getMaxDepth(classType);
         return DataMapper.getMapper().queryForObject(sql, result, 1, maxDepth, parameter);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        if (confing != null) {
+            DataSource dataSource = confing.getDataSource();
+            if (dataSource == null) {
+                String dataSourceId = confing.getDataSourceId();
+                if (dataSourceId != null) {
+                    DataSource source = applicationContext.getBean(dataSourceId, DataSource.class);
+                    confing.setDataSource(source);
+                }
+            }
+        }
     }
 }
