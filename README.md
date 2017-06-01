@@ -1,4 +1,4 @@
-jkami简介及特征
+## jkami简介及特征
 
 jkami是对jdbc轻量级的封装，不需要第三方jar包 实现 类似Hibernate实体维护和Mybaits SQL分离的两大优势。 具有以下特征:
 
@@ -13,9 +13,7 @@ jkami是对jdbc轻量级的封装，不需要第三方jar包 实现 类似Hibern
 * 9.支持实体的懒加载
 * 10.支持实体的级联查询（可配置查询深度）
 
-#Quick Start
-
-## pom.xml
+## Quick Start
 	 <dependency>
 	    <groupId>com.github.lftao</groupId>
 	    <artifactId>jkami</artifactId>
