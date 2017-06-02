@@ -57,27 +57,25 @@ jkami是对jdbc轻量级的封装，不需要第三方jar包 实现 类似Hibern
 
 
 ### 接口定义[IUserDao.java]
-    
     @KaMiDao
-	 @ResultType(User.class)
-	 public interface IUserDao{
-	 
-	    User findUserByMobile(@Param("tel") Long mobile);
-	     
-	    List<User> findListByName(@Param("name") String name);
-	
-	    // :age or ${age}
-	    @ResultType(Long.class)
-	    @Sql("select count(1) from tb_user where age > :age ")
-	    Long countAge(@Param("age") int age);
-	
-	   
-	    @ResultType(Map.class)
-	    List<Map<String, Object>> findMapByName(@Param("name") String name);
-	
-	    
-	    @PageQuery
-	    Page<User> findMyPage(@Param("map") Map<String, Object> map);
+    @ResultType(User.class)//默认查询返回类型
+     //继承接口提供单表的增删改查操作
+    public interface IUserDao extends KaMiDaoInterface<User>{
+
+   	User findUserByMobile(@Param("tel") Long mobile);
+
+	List<User> findListByName(@Param("name") String name);
+
+	// :age or ${age}
+	@ResultType(Long.class)
+	@Sql("select count(1) from tb_user where age > :age ")
+	Long countAge(@Param("age") int age);
+
+         @ResultType(Map.class)
+	 List<Map<String, Object>> findMapByName(@Param("name") String name);
+
+    	@PageQuery
+    	Page<User> findMyPage(@Param("map") Map<String, Object> map);
     }
  ### 接口定义[IUserOrderDao.java]
  
