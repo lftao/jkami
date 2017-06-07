@@ -31,8 +31,8 @@
         <developerConnection>
             scm:git:https://github.com/lftao/jkami.git
         </developerConnection>
-        <url>https://github.com/dingey/jdbc-mapper</url>
-        <tag>1.0</tag>
+        <url>https://github.com/lftao/jkami</url>
+        <tag>1.0.1</tag>
     </scm>
     <distributionManagement>
         <snapshotRepository>
