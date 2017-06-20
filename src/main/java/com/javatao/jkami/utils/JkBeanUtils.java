@@ -508,7 +508,7 @@ public class JkBeanUtils {
     }
 
     /**
-     * 返回 maxDepth default 3
+     * 返回 maxDepth default 2
      * 
      * @param classType
      *            class
