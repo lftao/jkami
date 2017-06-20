@@ -42,7 +42,7 @@ public class BeanListHandle<T> implements ResultHandle<List<T>> {
     public List<T> handle(ResultSet rs) {
         if (_depth > _maxDepth) {
             logger.debug("Bean load is max Depth ");
-            return null;
+            return new ArrayList<>();
         }
         RunConfing config = RunConfing.getConfig();
         // 返回map对象
