@@ -125,3 +125,5 @@ jkami是对jdbc轻量级的封装，不需要第三方jar包 实现 类似Hibern
 
 ### 测试代码
  https://github.com/lftao/jkami-demo
+### 其他
+ 喜欢请右上角星星(star)点一点，谢谢
