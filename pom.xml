@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.github.lftao</groupId>
     <artifactId>jkami</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>jkami</name>
     <description>sql mapper for java</description>
     <url>https://github.com/lftao/jkami</url>
