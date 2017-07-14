@@ -172,10 +172,7 @@ public class DataMapper {
         Class<?> classType = o.getClass();
         String sql = SqlUtils.getSqls(classType, SqlUtils.TYPE.INSERT);
         try {
-            Object[] key = SqlUtils.getTableKey(classType);
-            if (key == null) {
-                throw new JkException(classType.getPackage() + classType.getName() + " no  @key annotation ");
-            }
+            Object[] key = getTableKey(classType);
             Object idValue = JkBeanUtils.getPropertyValue(o, (String) key[0]);
             String dbType = config.getDbType();
             if (idValue == null) {
@@ -335,10 +332,7 @@ public class DataMapper {
         Connection con = getCon();
         String sql = SqlUtils.getSqls(classType, SqlUtils.TYPE.SELECT);
         try {
-            Object[] key = SqlUtils.getTableKey(classType);
-            if (key == null) {
-                throw new RuntimeException(classType.getPackage() + classType.getName() + "no  @key annotation ");
-            }
+            Object[] key = getTableKey(classType);
             sql += " where " + key[1] + " = ? ";
             int maxDepth = JkBeanUtils.getMaxDepth(classType);
             return queryForObject(sql, classType, 1, maxDepth, id);
@@ -361,10 +355,7 @@ public class DataMapper {
     public <T> int updateById(T o) {
         Class<?> classType = o.getClass();
         String sql = SqlUtils.getSqls(classType, SqlUtils.TYPE.UPDATE);
-        Object[] key = SqlUtils.getTableKey(classType);
-        if (key == null) {
-            throw new RuntimeException(classType.getPackage() + classType.getName() + "no  @key annotation ");
-        }
+        Object[] key = getTableKey(classType);
         sql += " where " + key[1] + " = ? ";
         Connection con = getCon();
         try {
@@ -374,7 +365,7 @@ public class DataMapper {
             PreparedStatement ps = con.prepareStatement(sql);
             Object kv = JkBeanUtils.getPropertyValue(o, (String) key[0]);
             int psSize = setPSEntityValue(ps, o);
-            ps.setObject(psSize+ 1, kv);
+            ps.setObject(psSize + 1, kv);
             int n = ps.executeUpdate();
             ps.close();
             return n;
@@ -501,6 +492,10 @@ public class DataMapper {
                 isFirst = false;
             }
         }
+        Object[] key = getTableKey(classType);
+        sb.append(" where " + key[1] + " = ? ");
+        Object kv = JkBeanUtils.getPropertyValue(o, (String) key[0]);
+        values.add(kv);
         String sql = sb.toString();
         return executeUpdate(sql, values);
     }
@@ -604,7 +599,7 @@ public class DataMapper {
         if (k != null && k.length > 0) {
             key = k[0];
         }
-        //非 别名参数 sql 直接解析${...}
+        // 非 别名参数 sql 直接解析${...}
         if (sqlParamsMap != null && !sqlParamsMap.isEmpty()) {
             executeSql = FKParse.parseTemplateContent(executeSql, sqlParamsMap);
         }
@@ -639,5 +634,22 @@ public class DataMapper {
         Map<String, Object> sqlParamsMap = new HashMap<>();
         sqlParamsMap.put(DEFAULT_BEAN, value);
         return placeholderSqlParam(executeSql, sqlParamsMap, result, DEFAULT_BEAN + ".");
+    }
+
+    /**
+     * 获得表的主键信息
+     * 
+     * @param classType
+     * @return
+     *         [0] name
+     *         [1] cloumn
+     *         [2] type
+     */
+    private Object[] getTableKey(Class<?> classType) {
+        Object[] key = SqlUtils.getTableKey(classType);
+        if (key == null) {
+            throw new RuntimeException(classType.getPackage() + classType.getName() + "no  @key annotation ");
+        }
+        return key;
     }
 }
