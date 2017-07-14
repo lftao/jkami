@@ -366,8 +366,23 @@ public class DataMapper {
             throw new RuntimeException(classType.getPackage() + classType.getName() + "no  @key annotation ");
         }
         sql += " where " + key[1] + " = ? ";
-        Object kv = JkBeanUtils.getPropertyValue(o, (String) key[0]);
-        return executeUpdate(sql, kv);
+        Connection con = getCon();
+        try {
+            if (logger.isDebugEnabled()) {
+                logger.debug(sql);
+            }
+            PreparedStatement ps = con.prepareStatement(sql);
+            Object kv = JkBeanUtils.getPropertyValue(o, (String) key[0]);
+            int psSize = setPSEntityValue(ps, o);
+            ps.setObject(psSize+ 1, kv);
+            int n = ps.executeUpdate();
+            ps.close();
+            return n;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            doReleaseConnection(con);
+        }
     }
 
     /**
@@ -386,7 +401,6 @@ public class DataMapper {
                 logger.debug(sql);
             }
             PreparedStatement ps = con.prepareStatement(sql);
-            ps.addBatch(sql);
             setPSValue(ps, params);
             int n = ps.executeUpdate();
             ps.close();
