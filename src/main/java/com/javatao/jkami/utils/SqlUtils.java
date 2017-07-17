@@ -442,7 +442,7 @@ public class SqlUtils {
         List<SearchFilter> filters = page.getSearchFilter();
         String query = getSearchParames(classType, filters, params);
         if (isNotBlank(page.getOrder())) {
-            query.concat("  order by " + page.getOrder());
+            query = query.concat("  order by " + page.getOrder());
         }
         return query;
     }
