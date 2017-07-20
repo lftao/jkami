@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.springframework.jdbc.support.JdbcUtils;
 
@@ -16,6 +17,7 @@ import org.springframework.jdbc.support.JdbcUtils;
  */
 public class MapListHandle implements ResultHandle<List<Map<String, Object>>> {
     private final static String RWN = "rownum_";
+    private final static Pattern blend=Pattern.compile("([a-z]+[A-Z]+\\w*)|([A-Z]+[a-z]+\\w*)");
 
     @Override
     public List<Map<String, Object>> handle(ResultSet rs) {
@@ -27,8 +29,12 @@ public class MapListHandle implements ResultHandle<List<Map<String, Object>>> {
             for (int i = 1; i <= n; i++) {
                 // sql 查询的字段
                 String name = rsm.getColumnLabel(i);
-                if (RWN.equalsIgnoreCase(name)) {
+                if (RWN.equals(name)) {
                     continue;
+                }
+                //非大小写混合
+                if (!blend.matcher(name).matches()) {
+                    name = name.toLowerCase();
                 }
                 names.add(name);
             }

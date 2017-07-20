@@ -26,7 +26,6 @@ import com.javatao.jkami.utils.JkBeanUtils.PsKey;
  */
 public class BeanListHandle<T> implements ResultHandle<List<T>> {
     private static final Log logger = LogFactory.getLog(BeanListHandle.class);
-    private final String SPLIT = "_";
     private Class<T> clazz;
     private int _depth;
     private int _maxDepth;
@@ -78,10 +77,8 @@ public class BeanListHandle<T> implements ResultHandle<List<T>> {
                         if (pname != null) {
                             key = pname;
                         }
-                        if (key.indexOf(SPLIT) > -1) {
-                            // 转换对象属性名字
-                            key = JkBeanUtils.columnToHump(key);
-                        }
+                        // 转换对象属性名字
+                        key = JkBeanUtils.columnToHump(key);
                         return key;
                     }
                 });
