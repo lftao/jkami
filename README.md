@@ -17,7 +17,7 @@ jkami是对jdbc轻量级的封装，不需要第三方jar包 实现 类似Hibern
 	 <dependency>
 	    <groupId>com.github.lftao</groupId>
 	    <artifactId>jkami</artifactId>
-	    <version>1.0.5</version>
+	    <version>1.0.6</version>
 	</dependency>
 ## spring config
 	 <bean class="com.javatao.jkami.spring.MapperScannerConfigurer">
