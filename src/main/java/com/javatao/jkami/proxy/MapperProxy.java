@@ -42,10 +42,10 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        RunConfing.bindConfing(this.getConfing());
+        Object resutl = null;
         try {
             // 绑定线程参数
-            RunConfing.bindConfing(this.getConfing());
-            Object resutl = null;
             if (method.getDeclaringClass().isAssignableFrom(KaMiDaoInterface.class)) {
                 resutl = method.invoke(this, args);
             } else {
@@ -56,12 +56,13 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
                     resutl = runTemplate(method, getParamMap(method, args));
                 }
             }
-            RunConfing.clear();
-            LazyBeanHolder.clear();
             return resutl;
         } catch (Throwable t) {
             t.printStackTrace();
             throw new JkException(t);
+        }finally{
+            RunConfing.clear();
+            LazyBeanHolder.clear();
         }
     }
 

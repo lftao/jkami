@@ -138,15 +138,49 @@ public class JkBeanUtils {
                     return o;
                 }
             } else if (type.isAssignableFrom(String.class)) {
-                if (value instanceof Clob) {
+                if (value instanceof List) {
+                    List<?> lv = (List<?>) value;
+                    if (lv == null || lv.size() == 0) {
+                        return o;
+                    }
+                    StringBuilder sb = new StringBuilder(lv.get(0).toString());
+                    for (int i = 1; i < lv.size(); i++) {
+                        sb.append("," + lv.get(i));
+                    }
+                    field.set(o, sb.toString());
+                    return o;
+                } else if (value instanceof Clob) {
                     String vl = LobUtils.toStr((Clob) value);
                     field.set(o, vl);
                     return o;
-                }
-                if (value instanceof Blob) {
+                } else if (value instanceof Blob) {
                     String vl = LobUtils.toStr((Blob) value);
                     field.set(o, vl);
                     return o;
+                } else {
+                    if (value != null) {
+                        field.set(o, value.toString());
+                    }
+                    return o;
+                }
+            } else if (type.isAssignableFrom(Boolean.class)) {
+                if (value instanceof Boolean) {
+                    field.set(o, value);
+                } else if (value instanceof Number) {
+                    String v = value.toString();
+                    field.set(o, (v.equals("1") || v.equalsIgnoreCase("y")) ? true : false);
+                }
+            } else if (type.isEnum()) {// 枚举2016.07.13 tao add
+                try {
+                    Object[] ts = type.getEnumConstants();
+                    for (Object ob : ts) {
+                        if (ob.toString().equals(value.toString())) {
+                            field.set(o, ob);
+                            return o;
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             } else {
                 if (value instanceof List) {
@@ -154,25 +188,10 @@ public class JkBeanUtils {
                     if (lv == null || lv.size() == 0) {
                         return o;
                     }
-                    if (type.isAssignableFrom(String.class)) {
-                        String vvo = lv.get(0).toString();
-                        for (int i = 1; i < lv.size(); i++) {
-                            vvo += "," + lv.get(i);
-                        }
-                        field.set(o, vvo);
-                        return o;
+                    if (lv.size() == 1) {
+                        field.set(o, lv.get(0));
                     } else {
-                        if (lv.size() == 1) {
-                            field.set(o, lv.get(0));
-                        } else {
-                            throw new JkException(" list:size = " + lv.size());
-                        }
-                    }
-                } else if (type.isAssignableFrom(Boolean.class)) {
-                    if (value instanceof Boolean) {
-                        field.set(o, value);
-                    } else if (value instanceof Number) {
-                        field.set(o, value.toString().equals("1") ? true : false);
+                        throw new JkException(" list:size = " + lv.size());
                     }
                 } else if (value instanceof Boolean) {
                     if (type.isAssignableFrom(Integer.class) || type.isAssignableFrom(Short.class) || type.isAssignableFrom(Long.class)
@@ -197,18 +216,6 @@ public class JkBeanUtils {
                         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
                             e.printStackTrace();
                         }
-                    }
-                } else if (type.isEnum()) {// 枚举2016.07.13 tao add
-                    try {
-                        Object[] ts = type.getEnumConstants();
-                        for (Object ob : ts) {
-                            if (ob.toString().equals(value.toString())) {
-                                field.set(o, ob);
-                                return o;
-                            }
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
                 } else {
                     field.set(o, value);
