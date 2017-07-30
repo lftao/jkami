@@ -112,9 +112,9 @@ public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAw
     }
 
     @Override
-    public List<T> findList(String sql, Class<T> result, Object... parameter) {
+    public <K> List<K> findList(String sql, Class<K> result, Object... parameter) {
         int maxDepth = JkBeanUtils.getMaxDepth(result);
-        List<T> list = DataMapper.getMapper().query(sql, new BeanListHandle<>(classType, 1, maxDepth));
+        List<K> list = DataMapper.getMapper().query(sql, new BeanListHandle<>(result, 1, maxDepth));
         return list;
     }
 
@@ -147,8 +147,8 @@ public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAw
     }
 
     @Override
-    public T queryForObject(String sql, Class<T> result, Object... parameter) {
-        int maxDepth = JkBeanUtils.getMaxDepth(classType);
+    public <K> K queryForObject(String sql, Class<K> result, Object... parameter) {
+        int maxDepth = JkBeanUtils.getMaxDepth(result);
         return DataMapper.getMapper().queryForObject(sql, result, 1, maxDepth, parameter);
     }
 

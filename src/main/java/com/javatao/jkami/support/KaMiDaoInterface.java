@@ -33,6 +33,7 @@ public interface KaMiDaoInterface<T> {
 
     /**
      * 查找返回对象
+     * @param <K>
      * 
      * @param sql
      *            sql
@@ -42,7 +43,7 @@ public interface KaMiDaoInterface<T> {
      *            参数
      * @return 实体
      */
-    T queryForObject(String sql, Class<T> result, Object... parameter);
+    <K> K queryForObject(String sql, Class<K> result, Object... parameter);
 
     /**
      * 根据id删除
@@ -105,7 +106,7 @@ public interface KaMiDaoInterface<T> {
      *            参数
      * @return 结果集合
      */
-    List<T> findList(String sql, Class<T> result, Object... parameter);
+     <K> List<K> findList(String sql, Class<K> result, Object... parameter);
 
     /**
      * 根据id更新
