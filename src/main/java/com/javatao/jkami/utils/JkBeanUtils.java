@@ -296,8 +296,10 @@ public class JkBeanUtils {
             allField.add(field);
         }
         Class<?> superclass = clazz.getSuperclass();
-        if (superclass.getDeclaredFields().length > 0) {
-            allField.addAll(getAllFields(superclass));
+        if(superclass!=null){
+            if (superclass.getDeclaredFields().length > 0) {
+                allField.addAll(getAllFields(superclass));
+            }
         }
         return allField;
     }

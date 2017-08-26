@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.javatao.jkami.JkException;
+
 import freemarker.cache.StringTemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
@@ -41,18 +43,20 @@ public class FKParse {
         _tplConfig.setClassForTemplateLoading(FKParse.class, "/");
         _tplConfig.setLocale(Locale.CHINESE);
         _tplConfig.setLocalizedLookup(false);
-        _tplConfig.setNumberFormat("0.#####################");
+        _tplConfig.setNumberFormat("#");
         _tplConfig.setClassicCompatible(true);
         _tplConfig.setDateFormat(dateFormat);
         _tplConfig.setDateTimeFormat(dateFormat);
+        _tplConfig.setTagSyntax(Configuration.AUTO_DETECT_TAG_SYNTAX);
         // --
         _sqlConfig.setTemplateLoader(stringTemplateLoader);
-        _sqlConfig.setNumberFormat("0.#####################");
+        _sqlConfig.setNumberFormat("#");
         _sqlConfig.setLocalizedLookup(false);
         _sqlConfig.setLocale(Locale.CHINESE);
         _sqlConfig.setClassicCompatible(true);
         _sqlConfig.setDateFormat(dateFormat);
         _sqlConfig.setDateTimeFormat(dateFormat);
+        _sqlConfig.setTagSyntax(Configuration.AUTO_DETECT_TAG_SYNTAX);
     }
 
     /**
@@ -69,8 +73,7 @@ public class FKParse {
                 return false;
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            throw new JkException(e);
         }
         return true;
     }

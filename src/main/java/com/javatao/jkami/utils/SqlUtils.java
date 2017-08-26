@@ -4,9 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.util.LinkedCaseInsensitiveMap;
 
 import com.javatao.jkami.CacheMap;
 import com.javatao.jkami.Page;
@@ -191,7 +192,7 @@ public class SqlUtils {
         String k = clazz.getName();
         List<String> attrs = new ArrayList<>();
         List<String> columns = new ArrayList<>();
-        Map<String, String> cmsql = new HashMap<>();
+        Map<String, String> cmsql = new LinkedCaseInsensitiveMap<>();
         List<Field> listField = JkBeanUtils.getAllFields(clazz);
         for (Field field : listField) {
             // 排除静态
@@ -378,7 +379,7 @@ public class SqlUtils {
         if (mapCache.containsKey(k)) {
             return (Map<String, String>) mapCache.get(k);
         }
-        Map<String, String> mp = new HashMap<String, String>();
+        Map<String, String> mp = new LinkedCaseInsensitiveMap<>();
         List<Field> lsField = JkBeanUtils.getAllFields(clazz);
         String tmp = "";
         for (Field field : lsField) {
@@ -418,7 +419,7 @@ public class SqlUtils {
         if (mapCache.containsKey(k)) {
             return (Map<String, String>) mapCache.get(k);
         }
-        Map<String, String> mp = new HashMap<String, String>();
+        Map<String, String> mp = new LinkedCaseInsensitiveMap<>();
         Map<String, String> filedCol = getEntityFiledColumnMap(clazz);
         for (String key : filedCol.keySet()) {
             mp.put(filedCol.get(key), key);
