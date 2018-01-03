@@ -53,7 +53,12 @@ public class SearchFilter implements Serializable {
         /**
          * property not in (sql)
          */
-        notInSql("");
+        notInSql(""),
+        /**
+         * property concat
+         */
+        concat("");
+        
         String op;
         String sql;
 

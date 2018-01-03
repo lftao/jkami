@@ -81,10 +81,15 @@ public class LazyBeanProxy implements MethodInterceptor, Serializable {
                     ResultType result = field.getAnnotation(ResultType.class);
                     if (result != null) {
                         type = result.value();
+                    } else {
+                        String property = SqlUtils.getConfigMapping().getProperty(classType.getName() + "." + prop + "[resultType]");
+                        if (property != null) {
+                            type = Class.forName(property);
+                        }
                     }
                     List<?> oval = mapper.query(sql, new BeanListHandle<>(type, now_depth, _maxDepth), params);
                     JkBeanUtils.setProperty(obj, prop, oval);
-                    Boolean force = SqlUtils.getSqlForce(classType.toString() + prop);
+                    Boolean force = SqlUtils.getSqlForce(classType.toString() + "." + prop);
                     if (!force) {
                         isLoad.add(prop);
                     }
@@ -94,7 +99,7 @@ public class LazyBeanProxy implements MethodInterceptor, Serializable {
         } else if (methodName.indexOf(SET) > -1) {
             String name = methodName.substring(3);
             String prop = JkBeanUtils.firstToMix(name);
-            Boolean force = SqlUtils.getSqlForce(classType.getName() + prop);
+            Boolean force = SqlUtils.getSqlForce(classType.getName() + "." + prop);
             if (!force) {
                 isLoad.add(prop);
             }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -296,7 +297,7 @@ public class JkBeanUtils {
             allField.add(field);
         }
         Class<?> superclass = clazz.getSuperclass();
-        if(superclass!=null){
+        if (superclass != null) {
             if (superclass.getDeclaredFields().length > 0) {
                 allField.addAll(getAllFields(superclass));
             }
@@ -529,6 +530,13 @@ public class JkBeanUtils {
             Depth depth = classType.getAnnotation(Depth.class);
             if (depth != null) {
                 maxDepth = depth.value();
+            } else {
+                Properties configMapping = SqlUtils.getConfigMapping();
+                String key = classType.getName() + "[depth]";
+                String val = configMapping.getProperty(key);
+                if (val != null) {
+                    maxDepth = Integer.valueOf(val);
+                }
             }
         }
         return maxDepth;

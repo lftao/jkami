@@ -122,7 +122,7 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
         String packageNme = _interface.getPackage().getName();
         String simpleName = _interface.getSimpleName();
         String methodName = method.getName();
-        String sqlpath = this.getConfing().getSqlpath();
+        String sqlpath = this.getConfing().getSqlPath();
         if (sqlpath != null) {
             packageNme = sqlpath;
         } else {

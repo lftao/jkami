@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import com.javatao.jkami.RunConfing;
 import com.javatao.jkami.annotations.KaMiDao;
 import com.javatao.jkami.proxy.MapperProxy;
+import com.javatao.jkami.utils.SqlUtils;
 
 /**
  * 扫描注册类
@@ -53,8 +54,13 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
         confing.setLazybean(lazybean);
     }
 
-    public void setSqlpath(String sqlpath) {
-        confing.setSqlpath(sqlpath);
+    public void setSqlPath(String sqlPath) {
+        confing.setSqlPath(sqlPath);
+    }
+    
+    public void setMappingPath(String mappingPath) {
+        confing.setMappingPath(mappingPath);
+        SqlUtils.loadConfigMapping(mappingPath);
     }
 
     @Override
