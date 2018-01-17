@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -23,6 +22,7 @@ import com.javatao.jkami.JkException;
 import com.javatao.jkami.annotations.Depth;
 import com.javatao.jkami.jdbc.BlobImpl;
 import com.javatao.jkami.jdbc.LobUtils;
+import com.javatao.jkami.spring.MappingProperty;
 
 /**
  * BeanUtils Set get
@@ -531,9 +531,9 @@ public class JkBeanUtils {
             if (depth != null) {
                 maxDepth = depth.value();
             } else {
-                Properties configMapping = SqlUtils.getConfigMapping();
+                Map<String, String> configMapping = MappingProperty.getConfigMapping();
                 String key = classType.getName() + "[depth]";
-                String val = configMapping.getProperty(key);
+                String val = configMapping.get(key);
                 if (val != null) {
                     maxDepth = Integer.valueOf(val);
                 }

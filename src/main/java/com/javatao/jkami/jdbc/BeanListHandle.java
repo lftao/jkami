@@ -99,14 +99,9 @@ public class BeanListHandle<T> implements ResultHandle<List<T>> {
                             sql = mapper.placeholderSqlParam(sql, params, o);
                             Field field = JkBeanUtils.getObjField(clazz, name);
                             Class<?> type = field.getType();
-                            ResultType result = field.getAnnotation(ResultType.class);
+                            ResultType result = SqlUtils.getAnnotation(field,ResultType.class);
                             if (result != null) {
                                 type = result.value();
-                            } else {
-                                String property = SqlUtils.getConfigMapping().getProperty(clazz.getName() + "." + name + "[resultType]");
-                                if (property != null) {
-                                    type = Class.forName(property);
-                                }
                             }
                             List<?> oval = mapper.query(sql, new BeanListHandle<>(type, now_depth, _maxDepth), params);
                             JkBeanUtils.setProperty(o, name, oval);

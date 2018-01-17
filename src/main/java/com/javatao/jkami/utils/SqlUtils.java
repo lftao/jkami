@@ -1,15 +1,14 @@
 package com.javatao.jkami.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.springframework.util.LinkedCaseInsensitiveMap;
 
@@ -24,7 +23,10 @@ import com.javatao.jkami.annotations.SequenceGenerator;
 import com.javatao.jkami.annotations.Sql;
 import com.javatao.jkami.annotations.Table;
 import com.javatao.jkami.annotations.Transient;
+import com.javatao.jkami.spring.MappingProperty;
 import com.javatao.jkami.support.DataMapper;
+
+import sun.reflect.annotation.AnnotationParser;
 
 /**
  * sql工具类
@@ -37,8 +39,6 @@ public class SqlUtils {
     private static Map<String, List<String>> entityColumnMp = new CacheMap<>();
     private static Map<String, Map<String, String>> columnSqlMp = new CacheMap<>();
     private static Map<String, Boolean> sqlforce = new CacheMap<>();
-    // config mapping
-    private static Properties mappingEntity = new Properties();
 
     public enum TYPE {
         INSERT, SELECT, UPDATE
@@ -209,42 +209,26 @@ public class SqlUtils {
             if (fieldName.contains("CGLIB")) {
                 continue;
             }
-            Transient tr = field.getAnnotation(Transient.class);
+            Transient tr = getAnnotation(field,Transient.class);
             if (tr != null) {
                 continue;
             }
-            Column column = field.getAnnotation(Column.class);
+            Column column = getAnnotation(field,Column.class);
             String columnString = JkBeanUtils.columnToHumpReversal(fieldName);
             // 注解字段
             if (column != null) {
                 columnString = column.value();
             }
             String KeyMappingColumn = k + "." + fieldName;
-            // 映射字段
-            String mappingColumn = mappingEntity.getProperty(KeyMappingColumn);
-            if (mappingColumn != null) {
-                columnString = mappingColumn;
-            }
+     
             // 注解sql
-            Sql Sql = field.getAnnotation(Sql.class);
+            Sql Sql = getAnnotation(field,Sql.class);
             if (Sql != null) {
                 cmsql.put(fieldName, Sql.value());
                 sqlforce.put(KeyMappingColumn, Sql.force());
             } else {
-                // 映射字段
-                String mappingColumnSql = mappingEntity.getProperty(KeyMappingColumn + "[sql]");
-                if (mappingColumnSql != null) {
-                    cmsql.put(fieldName, mappingColumnSql);
-                    String mappingColumnSqlForce = mappingEntity.getProperty(KeyMappingColumn + "[sql][force]");
-                    if (mappingColumnSqlForce == null) {
-                        sqlforce.put(KeyMappingColumn, false);
-                    } else {
-                        sqlforce.put(KeyMappingColumn, Boolean.valueOf(mappingColumnSqlForce));
-                    }
-                } else {
-                    attrs.add(fieldName);
-                    columns.add(columnString);
-                }
+                attrs.add(fieldName);
+                columns.add(columnString);
             }
         }
         entityAttrMp.put(k, attrs);
@@ -260,9 +244,10 @@ public class SqlUtils {
      * @return 表名
      */
     public static String getTableName(Class<?> clazz) {
-        String k = clazz.getName() + "[tableName]";
-        if (mappingEntity.containsKey(k)) {
-            return mappingEntity.getProperty(k);
+        String k = clazz.getName() + "[Table]";
+        Map<String, String> mapping = MappingProperty.getConfigMapping();
+        if (mapping.containsKey(k)) {
+            return mapping.get(k);
         }
         if (mapCache.containsKey(k)) {
             return (String) mapCache.get(k);
@@ -308,27 +293,35 @@ public class SqlUtils {
      * @return 数组
      */
     public static Object[] getTableKey(Class<?> clazz) {
-        String k = clazz.getName() + "[key]";
+        String k = clazz.getName() + "[Key]";
         if (mapCache.containsKey(k)) {
             return (Object[]) mapCache.get(k);
         }
-        String KeyMapping = mappingEntity.getProperty(k);
+        String KeyMapping = MappingProperty.getConfigMapping().get(k);
         Object[] obj = new Object[3];
         List<Field> lsField = JkBeanUtils.getAllFields(clazz);
+        Field delaltfield = null;
         for (Field field : lsField) {
-            Key Key = field.getAnnotation(Key.class);
-            Column column = field.getAnnotation(Column.class);
+            Key Key = getAnnotation(field,Key.class);
+            Column column = getAnnotation(field,Column.class);
             String fieldName = field.getName();
             obj[0] = fieldName;
             obj[1] = fieldName;
             obj[2] = field.getType();
+            if (column != null) {
+                obj[1] = column.value();
+            }
+            if("id".equalsIgnoreCase(fieldName)){
+                delaltfield = field;
+            }
             if (Key != null || fieldName.equalsIgnoreCase(KeyMapping)) {
-                if (column != null) {
-                    obj[1] = column.value();
-                }
                 mapCache.put(k, obj);
                 return obj;
             }
+        }
+        if(delaltfield!=null){
+            mapCache.put(k, obj);
+            return obj;
         }
         return null;
     }
@@ -421,22 +414,16 @@ public class SqlUtils {
             if (fieldName.indexOf("CGLIB") > -1) {
                 continue;
             }
-            Sql Sql = field.getAnnotation(Sql.class);
+            Sql Sql = getAnnotation(field,Sql.class);
             if (Sql != null) {
                 continue;
             }
             String columnString;
-            Column column = field.getAnnotation(Column.class);
+            Column column = getAnnotation(field,Column.class);
             if (column != null) {
                 columnString = column.value();
             } else {
-                // 映射字段
-                String mappingColumn = mappingEntity.getProperty(kname + "." + fieldName);
-                if (mappingColumn != null) {
-                    columnString = mappingColumn;
-                } else {
-                    columnString = JkBeanUtils.columnToHumpReversal(field.getName());
-                }
+                columnString = JkBeanUtils.columnToHumpReversal(field.getName());
             }
             mp.put(field.getName(), columnString);
         }
@@ -632,69 +619,57 @@ public class SqlUtils {
     }
 
     /**
-     * 加载实体映射
+     * 获得配置转换注解
      * 
-     * @param path
-     *            路径
+     * @param field
+     *            字段
+     * @param classz
+     *            注解
+     * @return 注解类
      */
-    public static void loadConfigMapping(String path) {
-        if (path == null) {
-            return;
+    public static <T extends Annotation> T getAnnotation(Field field, Class<T> classz) {
+        T annotation = field.getAnnotation(classz);
+        if (annotation != null) {
+            return annotation;
         }
-        URL resource = SqlUtils.class.getResource("/");
-        File mappingDir = new File(resource.getPath() + path);
-        if (mappingDir.exists()) {
-            loadFileMapping(mappingDir);
-        }
-    }
-
-    /**
-     * 加载实体映射
-     * 
-     * @param file
-     *            文件
-     */
-    private static void loadFileMapping(File file) {
-        try {
-            if (file.isFile()) {
-                String fileName = file.getName();
-                if (fileName.length() > 11) {
-                    FileInputStream in = new FileInputStream(file);
-                    String name = fileName.substring(0, fileName.length() - 11);
-                    if (name.contains(".")) {
-                        Properties mapping = new Properties();
-                        mapping.load(in);
-                        for (Object key : mapping.keySet()) {
-                            String s = key.toString();
-                            if (s.startsWith("[")) {
-                                s = name + key;
-                            } else {
-                                s = name + "." + key;
-                            }
-                            mappingEntity.setProperty(s, mapping.getProperty(key.toString()));
-                        }
-                    } else {
-                        mappingEntity.load(in);
+        Map<String, String> mapping = MappingProperty.getConfigMapping();
+        
+        String objName = field.getDeclaringClass().getName();
+        String fieldName = field.getName();
+        String annoName = classz.getSimpleName();
+        String key = objName + "." + fieldName + "[" + annoName + "]";
+        String property = mapping.get(key);
+        
+        if (property != null) {
+            try {
+                Map<String, Object> map = new HashMap<>();
+                map.put("value", property);
+                Method[] fields = classz.getDeclaredMethods();
+                for (Method method : fields) {
+                    String name = method.getName();
+                    Class<?> returnType = method.getReturnType();
+                    if (returnType.isAssignableFrom(Class.class)) {
+                        map.put("value", Class.forName(property));
                     }
-                    in.close();
+                    Object value = mapping.get(key + "[" + name + "]");
+                    if (!map.containsKey(name)) {
+                        if (value != null) {
+                            if (returnType.isAssignableFrom(boolean.class)) {
+                                value = Boolean.valueOf(value.toString());
+                            } else if (returnType.isAssignableFrom(Number.class) || returnType.isAssignableFrom(Boolean.class)) {
+                                value = returnType.getConstructor(String.class).newInstance(value.toString());
+                            }
+                            map.put(name, value);
+                        } else {
+                            map.put(name, method.getDefaultValue());
+                        }
+                    }
                 }
-            } else if (file.isDirectory()) {
-                File[] listFiles = file.listFiles();
-                for (File fe : listFiles) {
-                    loadFileMapping(fe);
-                }
+                return (T) AnnotationParser.annotationForMap(classz, map);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-    }
-
-    /**
-     * 获取配置映射参数
-     * 
-     * @return
-     */
-    public static Properties getConfigMapping() {
-        return mappingEntity;
+        return null;
     }
 }

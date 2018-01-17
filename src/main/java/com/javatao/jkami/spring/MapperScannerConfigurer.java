@@ -16,7 +16,7 @@ import org.springframework.util.StringUtils;
 import com.javatao.jkami.RunConfing;
 import com.javatao.jkami.annotations.KaMiDao;
 import com.javatao.jkami.proxy.MapperProxy;
-import com.javatao.jkami.utils.SqlUtils;
+import com.javatao.jkami.support.DaoInterceptor;
 
 /**
  * 扫描注册类
@@ -37,7 +37,11 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
      * 配置参数
      */
     private RunConfing confing = new RunConfing();
-
+/**
+ * dao拦截器
+ */
+    private DaoInterceptor daoInterceptor;
+    
     public void setBasePackage(String basePackage) {
         this.basePackage = basePackage;
     }
@@ -60,7 +64,11 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
     
     public void setMappingPath(String mappingPath) {
         confing.setMappingPath(mappingPath);
-        SqlUtils.loadConfigMapping(mappingPath);
+        MappingProperty.loadConfigMapping(mappingPath);
+    }
+    
+    public void setDaoInterceptor(DaoInterceptor daoInterceptor) {
+        this.daoInterceptor = daoInterceptor;
     }
 
     @Override
@@ -69,8 +77,6 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
     @Override
     public void afterPropertiesSet() throws Exception {
         notNull(this.basePackage, "Property 'basePackage' is required");
-        
-        
     }
 
     @Override
@@ -94,6 +100,7 @@ public class MapperScannerConfigurer implements BeanDefinitionRegistryPostProces
         GenericBeanDefinition mapperProxyDefinition = new GenericBeanDefinition();
         mapperProxyDefinition.setBeanClass(MapperProxy.class);
         mapperProxyDefinition.getPropertyValues().add("confing", confing);
+        mapperProxyDefinition.getPropertyValues().add("daoInterceptor", daoInterceptor);
         registry.registerBeanDefinition("mapperProxy", mapperProxyDefinition);
     }
 

@@ -24,6 +24,7 @@ import com.javatao.jkami.annotations.Param;
 import com.javatao.jkami.annotations.ResultType;
 import com.javatao.jkami.annotations.Sql;
 import com.javatao.jkami.jdbc.BeanListHandle;
+import com.javatao.jkami.support.DaoInterceptor;
 import com.javatao.jkami.support.DataMapper;
 import com.javatao.jkami.support.KaMiDaoImpl;
 import com.javatao.jkami.support.KaMiDaoInterface;
@@ -40,12 +41,17 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
     private static final Log logger = LogFactory.getLog(MapperProxy.class);
     private static final long serialVersionUID = -3149859725082518128L;
 
+    private DaoInterceptor daoInterceptor;
+    
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         RunConfing.bindConfing(this.getConfing());
         Object resutl = null;
         try {
-            // 绑定线程参数
+            //  前置拦截
+            if(daoInterceptor!=null){
+                daoInterceptor.beforeInvoke(proxy, method, args);
+            }
             if (method.getDeclaringClass().isAssignableFrom(KaMiDaoInterface.class)) {
                 resutl = method.invoke(this, args);
             } else {
@@ -56,9 +62,12 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
                     resutl = runTemplate(method, getParamMap(method, args));
                 }
             }
+            //后置拦截
+            if(daoInterceptor!=null){
+                daoInterceptor.afterInvoke(proxy, method, args,resutl);
+            }
             return resutl;
         } catch (Throwable t) {
-            t.printStackTrace();
             throw new JkException(t);
         }finally{
             RunConfing.clear();
@@ -158,7 +167,11 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
             if (resultType == null) {
                 resultType = method.getDeclaringClass().getAnnotation(ResultType.class);
             }
-            returnType = resultType.value();
+            if (resultType != null) {
+                returnType = resultType.value();
+            } else {
+                returnType = super.getClassType();
+            }
         }
         List<Object> params = new ArrayList<>();
         sql = DataMapper.getMapper().placeholderSqlParam(sql, paramMap, params);
@@ -209,6 +222,10 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
         if (resultType != null) {
             this.setClassType(resultType);
         }
+    }
+
+    public void setDaoInterceptor(DaoInterceptor daoInterceptor) {
+        this.daoInterceptor = daoInterceptor;
     }
 
     @Override

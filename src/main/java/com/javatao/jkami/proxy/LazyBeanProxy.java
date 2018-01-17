@@ -78,14 +78,9 @@ public class LazyBeanProxy implements MethodInterceptor, Serializable {
                     sql = mapper.placeholderSqlParam(sql, params, obj);
                     Field field = JkBeanUtils.getObjField(obj.getClass(), prop);
                     Class<?> type = field.getType();
-                    ResultType result = field.getAnnotation(ResultType.class);
+                    ResultType result = SqlUtils.getAnnotation(field,ResultType.class);
                     if (result != null) {
                         type = result.value();
-                    } else {
-                        String property = SqlUtils.getConfigMapping().getProperty(classType.getName() + "." + prop + "[resultType]");
-                        if (property != null) {
-                            type = Class.forName(property);
-                        }
                     }
                     List<?> oval = mapper.query(sql, new BeanListHandle<>(type, now_depth, _maxDepth), params);
                     JkBeanUtils.setProperty(obj, prop, oval);

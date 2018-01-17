@@ -165,4 +165,8 @@ public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAw
             }
         }
     }
+    
+    public Class<?> getClassType() {
+        return classType;
+    }
 }
