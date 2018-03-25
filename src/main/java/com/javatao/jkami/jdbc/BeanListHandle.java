@@ -58,7 +58,9 @@ public class BeanListHandle<T> implements ResultHandle<List<T>> {
                 T o = null;
                 if (!JkBeanUtils.isBeanClass(clazz)) {
                     Object val = map.values().iterator().next();
-                    o = clazz.getConstructor(String.class).newInstance(String.valueOf(val));
+                    if(val!=null){
+                        o = clazz.getConstructor(String.class).newInstance(String.valueOf(val));
+                    }
                     resultlist.add(o);
                     continue;
                 }

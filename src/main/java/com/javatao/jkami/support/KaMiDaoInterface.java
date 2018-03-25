@@ -104,6 +104,8 @@ public interface KaMiDaoInterface<T> {
      *            类型
      * @param parameter
      *            参数
+     * @param <K>
+     *            泛型
      * @return 结果集合
      */
      <K> List<K> findList(String sql, Class<K> result, Object... parameter);

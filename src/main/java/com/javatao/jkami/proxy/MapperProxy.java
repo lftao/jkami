@@ -5,7 +5,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -14,8 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.javatao.jkami.ContextBeanHolder;
 import com.javatao.jkami.JkException;
-import com.javatao.jkami.LazyBeanHolder;
 import com.javatao.jkami.Page;
 import com.javatao.jkami.RunConfing;
 import com.javatao.jkami.annotations.ExecuteUpdate;
@@ -71,7 +70,7 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
             throw new JkException(t);
         }finally{
             RunConfing.clear();
-            LazyBeanHolder.clear();
+            ContextBeanHolder.clear();
         }
     }
 
@@ -84,7 +83,7 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
      */
     @SuppressWarnings("unchecked")
     private Map<String, Object> getParamMap(Method method, Object[] args) {
-        Map<String, Object> paramMap = new HashMap<>();
+        Map<String, Object> paramMap = ContextBeanHolder.getSqlParams();
         if (args == null) {
             return paramMap;
         }

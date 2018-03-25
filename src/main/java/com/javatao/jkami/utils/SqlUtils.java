@@ -625,6 +625,8 @@ public class SqlUtils {
      *            字段
      * @param classz
      *            注解
+     * @param <T>
+     *            注解泛型
      * @return 注解类
      */
     public static <T extends Annotation> T getAnnotation(Field field, Class<T> classz) {

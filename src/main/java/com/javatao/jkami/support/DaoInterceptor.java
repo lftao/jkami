@@ -31,7 +31,6 @@ public interface DaoInterceptor {
      *            参数
      * @param resutl
      *            返回结果
-     * @return
      */
     public void afterInvoke(Object proxy, Method method, Object[] args, Object resutl);
 }

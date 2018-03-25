@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
 
-import com.javatao.jkami.LazyBeanHolder;
+import com.javatao.jkami.ContextBeanHolder;
 import com.javatao.jkami.RunConfing;
 import com.javatao.jkami.annotations.ResultType;
 import com.javatao.jkami.jdbc.BeanListHandle;
@@ -44,7 +44,7 @@ public class LazyBeanProxy implements MethodInterceptor, Serializable {
         this.config = config;
         this._curentdepth = _curentdepth;
         this._maxDepth = maxDepth;
-        notLazy = LazyBeanHolder.get();
+        notLazy = ContextBeanHolder.getNotLazy();
     }
 
     @Override
@@ -64,7 +64,7 @@ public class LazyBeanProxy implements MethodInterceptor, Serializable {
                     }
                     return null;
                 }
-                notLazy.addAll(LazyBeanHolder.get());
+                notLazy.addAll(ContextBeanHolder.getNotLazy());
                 if (columnSqlMp.containsKey(prop) && !isLoad.contains(prop) && !notLazy.contains(prop)) {
                     int now_depth = new Integer(_curentdepth) + 1;
                     DataMapper mapper = DataMapper.getMapper();

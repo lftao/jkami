@@ -1,6 +1,7 @@
 package com.javatao.jkami.support;
 
 import java.io.Serializable;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,6 +20,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.javatao.jkami.ContextBeanHolder;
 import com.javatao.jkami.JkException;
 import com.javatao.jkami.Page;
 import com.javatao.jkami.RunConfing;
@@ -39,7 +41,7 @@ import com.javatao.jkami.utils.SqlUtils;
 public class DataMapper {
     private static DataMapper mapper;
     private static final Log logger = LogFactory.getLog(DataMapper.class);
-    private static final String DEFAULT_BEAN = "defaultBean";
+    private static final String DEFAULT_BEAN = "this";
     private static final String EMPTY = "";
     private static final String SEMICOLON = ";";
     /**
@@ -112,15 +114,11 @@ public class DataMapper {
                 args = ((Collection<?>) args[0]).toArray();
             }
             for (int i = 0; i < args.length; i++) {
-                Object v = args[i];
+                Object value = args[i];
                 int index = i + 1;
-                if (v instanceof Date) {
-                    ps.setTimestamp(index, new java.sql.Timestamp(((Date) v).getTime()));
-                } else {
-                    ps.setObject(index, v);
-                }
+                psValue(ps, index, value);
                 if (logger.isDebugEnabled()) {
-                    logger.debug("params[" + i + ":" + v + "]");
+                    logger.debug("params[" + i + ":" + value + "]");
                 }
             }
         }
@@ -146,11 +144,10 @@ public class DataMapper {
                 if (value == null) {
                     ps.setNull(index, JdbcTypesUtils.getJdbcType(value));
                 } else {
-                    if (value instanceof Date) {
-                        ps.setTimestamp(index, new java.sql.Timestamp(((Date) value).getTime()));
-                    } else {
-                        ps.setObject(index, value);
-                    }
+                    psValue(ps, index, value);
+                }
+                if (logger.isDebugEnabled()) {
+                    logger.debug("params[" + i + ":" + value + "]");
                 }
             }
             return fileds.size();
@@ -159,6 +156,27 @@ public class DataMapper {
         }
     }
 
+    /**
+     * 参数设置
+     * @param ps PreparedStatement
+     * @param index 下标
+     * @param value 参数
+     * @throws SQLException 异常
+     */
+    private void psValue(PreparedStatement ps, int index, Object value) throws SQLException {
+        if (value instanceof Date) {
+            ps.setTimestamp(index, new java.sql.Timestamp(((Date) value).getTime()));
+        } else if (value instanceof Collection) {
+            Collection<?> coll = (Collection<?>) value;
+            Connection conn = RunConfing.getConfig().getConnection();
+            String jdbcType = JdbcTypesUtils.getJdbcType(coll);
+            Array array = conn.createArrayOf(jdbcType, coll.toArray());
+            ps.setArray(index, array);
+        } else {
+            ps.setObject(index, value);
+        }
+    }
+    
     /**
      * 保存对象
      * 
@@ -610,10 +628,14 @@ public class DataMapper {
                 continue;
             }
             executeSql = executeSql.replace(match, "?");
-            Object v = FKParse.parseTemplateContent("${" + match.replace(":", key).trim() + "}", sqlParamsMap);
-            result.add(v);
+            match = match.replace(":", key).trim();
+            Object val = sqlParamsMap.get(match);
+            if(val==null){
+                val = FKParse.parseTemplateContent("${" + match + "}", sqlParamsMap);
+            }
+            result.add(val);
             if (logger.isDebugEnabled()) {
-                logger.debug(" Match [" + match + "] at positions " + m.start() + "-" + (m.end() - 1) + " value:" + v);
+                logger.debug(" Match [" + match + "] at positions " + m.start() + "-" + (m.end() - 1) + " value:" + val);
             }
         }
         return executeSql;
@@ -631,7 +653,7 @@ public class DataMapper {
      * @return 解析后sql
      */
     public String placeholderSqlParam(String executeSql, List<Object> result, Object value) {
-        Map<String, Object> sqlParamsMap = new HashMap<>();
+        Map<String, Object> sqlParamsMap = ContextBeanHolder.getSqlParams();
         sqlParamsMap.put(DEFAULT_BEAN, value);
         return placeholderSqlParam(executeSql, sqlParamsMap, result, DEFAULT_BEAN + ".");
     }

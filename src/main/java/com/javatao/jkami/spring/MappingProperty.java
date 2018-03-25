@@ -102,7 +102,7 @@ public class MappingProperty implements InitializingBean {
     /**
      * 加载实体映射
      * 
-     * @param file
+     * @param resource
      *            文件
      */
     public static void loadFileMapping(Resource resource) {
@@ -146,7 +146,7 @@ public class MappingProperty implements InitializingBean {
     /**
      * 获取配置映射参数
      * 
-     * @return
+     * @return 映射结果集合
      */
     public static Map<String, String> getConfigMapping() {
         return mappingEntity;
