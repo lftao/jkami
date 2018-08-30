@@ -180,7 +180,7 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
             Page page = new Page<>();
             page.setPage((Integer) paramMap.get("page"));
             page.setSize((Integer) paramMap.get("size"));
-            return DataMapper.getMapper().findPage(sql, returnType, page);
+            return DataMapper.getMapper().findPage(sql, returnType, page,params);
         }
         // 更新插入操作
         ExecuteUpdate isUpdate = method.getAnnotation(ExecuteUpdate.class);

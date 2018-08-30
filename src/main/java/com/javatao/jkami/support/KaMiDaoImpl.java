@@ -138,7 +138,7 @@ public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAw
 
     @Override
     public Page<T> findPage(Page<T> pagevo) {
-        return DataMapper.getMapper().findPage(null, classType, pagevo);
+        return DataMapper.getMapper().findPage(null, classType, pagevo,null);
     }
 
     @Override

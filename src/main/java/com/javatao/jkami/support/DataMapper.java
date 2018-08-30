@@ -11,7 +11,6 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -158,10 +157,15 @@ public class DataMapper {
 
     /**
      * 参数设置
-     * @param ps PreparedStatement
-     * @param index 下标
-     * @param value 参数
-     * @throws SQLException 异常
+     * 
+     * @param ps
+     *            PreparedStatement
+     * @param index
+     *            下标
+     * @param value
+     *            参数
+     * @throws SQLException
+     *             异常
      */
     private void psValue(PreparedStatement ps, int index, Object value) throws SQLException {
         if (value instanceof Date) {
@@ -172,11 +176,13 @@ public class DataMapper {
             String jdbcType = JdbcTypesUtils.getJdbcType(coll);
             Array array = conn.createArrayOf(jdbcType, coll.toArray());
             ps.setArray(index, array);
+        } else if (value!=null&&value.getClass().isEnum()) {
+            ps.setString(index, value.toString());
         } else {
             ps.setObject(index, value);
         }
     }
-    
+
     /**
      * 保存对象
      * 
@@ -531,7 +537,7 @@ public class DataMapper {
      *            分页参数
      * @return 分页实例
      */
-    public <T> Page<T> findPage(String sql, Class<T> classType, Page<T> page) {
+    public <T> Page<T> findPage(String sql, Class<T> classType, Page<T> page, List<Object> params) {
         if (page == null) {
             page = new Page<>();
         }
@@ -540,8 +546,9 @@ public class DataMapper {
         }
         RunConfing config = RunConfing.getConfig();
         String dbType = config.getDbType();
-        //
-        ArrayList<Object> params = new ArrayList<>();
+        if (params == null) {
+            params = new ArrayList<>();
+        }
         String sqlParam = SqlUtils.getSearchParames(classType, page, params);
         sql += sqlParam;
         String pageSql = createPageSql(dbType, sql, page.getPage(), page.getSize(), params);
@@ -573,7 +580,7 @@ public class DataMapper {
      *            参数
      * @return 分页sql
      */
-    public static String createPageSql(String dbType, String sql, int page, int rows, ArrayList<Object> params) {
+    public static String createPageSql(String dbType, String sql, int page, int rows, List<Object> params) {
         int beginNum = (page - 1) * rows;
         if (JkBeanUtils.isBlank(dbType)) {
             throw new RuntimeException("(数据库类型:dbType) 没有设置,请检查配置文件");
@@ -630,7 +637,7 @@ public class DataMapper {
             executeSql = executeSql.replace(match, "?");
             match = match.replace(":", key).trim();
             Object val = sqlParamsMap.get(match);
-            if(val==null){
+            if (val == null) {
                 val = FKParse.parseTemplateContent("${" + match + "}", sqlParamsMap);
             }
             result.add(val);
