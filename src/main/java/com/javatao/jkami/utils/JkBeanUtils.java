@@ -181,7 +181,7 @@ public class JkBeanUtils {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    logger.warn(e);
                 }
             } else {
                 if (value instanceof List) {
@@ -215,7 +215,7 @@ public class JkBeanUtils {
                         try {
                             field.set(o, type.getConstructor(String.class).newInstance(value.toString()));
                         } catch (InstantiationException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-                            e.printStackTrace();
+                            logger.warn(e);
                         }
                     }
                 } else {
@@ -408,7 +408,7 @@ public class JkBeanUtils {
                 Object value = entry.getValue();
                 setProperty(obj, key, value);
             } catch (Exception e) {
-                logger.error(e);
+                logger.warn(e);
             }
         }
         return obj;
