@@ -444,16 +444,21 @@ public class DataMapper {
             }
             String[] sqlss = sqls.replaceAll("\r|\n", EMPTY).split(SEMICOLON);
             int length = sqlss.length;
+            int runsize = sqlss.length;
             Statement st = con.createStatement();
             for (int i = 0; i < length; i++) {
                 String sql = sqlss[i];
+                if (sql == null || sql.isEmpty() || sql.trim().isEmpty()) {
+                    runsize--;
+                    continue;
+                }
                 if (logger.isDebugEnabled()) {
                     logger.debug("addBatch: " + sql);
                 }
                 st.addBatch(sql);
             }
             if (logger.isDebugEnabled()) {
-                logger.debug("executeBatchUpdate size: " + length);
+                logger.debug("executeBatchUpdate size: " + runsize);
             }
             int[] batch = st.executeBatch();
             st.close();
