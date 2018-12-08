@@ -177,7 +177,7 @@ public class DataMapper {
             Array array = conn.createArrayOf(jdbcType, coll.toArray());
             ps.setArray(index, array);
         } else if (value!=null&&value.getClass().isEnum()) {
-            ps.setString(index, value.toString());
+            ps.setString(index, ((Enum<?>)value).name());
         } else {
             ps.setObject(index, value);
         }

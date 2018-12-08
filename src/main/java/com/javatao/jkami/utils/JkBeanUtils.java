@@ -173,9 +173,9 @@ public class JkBeanUtils {
                 }
             } else if (type.isEnum()) {// 枚举2016.07.13 tao add
                 try {
-                    Object[] ts = type.getEnumConstants();
-                    for (Object ob : ts) {
-                        if (ob.toString().equals(value.toString())) {
+                    Enum<?>[] ts = (Enum[]) type.getEnumConstants();
+                    for (Enum<?> ob : ts) {
+                        if (ob.name().equals(value.toString())) {
                             field.set(o, ob);
                             return o;
                         }
