@@ -27,6 +27,7 @@ import com.javatao.jkami.support.DaoInterceptor;
 import com.javatao.jkami.support.DataMapper;
 import com.javatao.jkami.support.KaMiDaoImpl;
 import com.javatao.jkami.support.KaMiDaoInterface;
+import com.javatao.jkami.utils.ExceptionUtils;
 import com.javatao.jkami.utils.FKParse;
 import com.javatao.jkami.utils.JkBeanUtils;
 import com.javatao.jkami.utils.SqlUtils;
@@ -67,6 +68,10 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
             }
             return resutl;
         } catch (Throwable t) {
+            Exception ex = ExceptionUtils.getException(t);
+            if (ex != null) {
+                throw ex;
+            }
             throw new JkException(t);
         }finally{
             RunConfing.clear();
@@ -166,7 +171,7 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
             if (resultType == null) {
                 resultType = method.getDeclaringClass().getAnnotation(ResultType.class);
             }
-            if (resultType != null) {
+            if (resultType != null) { 
                 returnType = resultType.value();
             } else {
                 returnType = super.getClassType();
