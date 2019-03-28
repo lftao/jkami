@@ -34,6 +34,12 @@ public class SearchFilter implements Serializable {
          * 等于
          */
         eq(" = ? "),
+        
+        /**
+         * 不等于
+         */
+        neq(" <> ? "),
+        
         /**
          * like ?
          */

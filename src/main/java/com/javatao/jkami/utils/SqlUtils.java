@@ -508,10 +508,6 @@ public class SqlUtils {
                         continue;
                     }
                     if (operator.equals(Operator.in)) {
-                        /*
-                         * String val = join(value);
-                         * sb.append(" in(" + val + ") ");
-                         */
                         sb.append(" in(" + joinCollect(value, params) + ") ");
                     } else if (operator.equals(Operator.inSql)) {
                         sb.append(" in(" + value + ") ");
@@ -519,6 +515,8 @@ public class SqlUtils {
                         sb.append(" not in(" + value + ") ");
                     } else if (operator.equals(Operator.concat)) {
                         sb.append(" " + value);
+                    }else if (operator.equals(Operator.not)) {
+                        sb.append(" not in(" + joinCollect(value, params) + ") ");
                     } else {
                         sb.append(operator.getOp());
                         params.add(value);

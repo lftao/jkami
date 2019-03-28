@@ -28,6 +28,7 @@ import com.javatao.jkami.jdbc.JdbcTypesUtils;
 import com.javatao.jkami.jdbc.MapListHandle;
 import com.javatao.jkami.jdbc.NumberHandle;
 import com.javatao.jkami.jdbc.ResultHandle;
+import com.javatao.jkami.utils.ExceptionUtils;
 import com.javatao.jkami.utils.FKParse;
 import com.javatao.jkami.utils.JkBeanUtils;
 import com.javatao.jkami.utils.SqlUtils;
@@ -151,7 +152,7 @@ public class DataMapper {
             }
             return fileds.size();
         } catch (Exception e) {
-            throw new JkException(e);
+            throw ExceptionUtils.runtimeException(e);
         }
     }
 
@@ -224,7 +225,7 @@ public class DataMapper {
             ps.close();
             return n;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             doReleaseConnection(con);
         }
@@ -286,7 +287,7 @@ public class DataMapper {
             ps.close();
             return rows;
         } catch (Exception e) {
-            throw new JkException(e);
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             doReleaseConnection(con);
         }
@@ -322,7 +323,7 @@ public class DataMapper {
             int maxDepth = JkBeanUtils.getMaxDepth(result);
             return queryForObject(sql, result, 1, maxDepth, values);
         } catch (Exception e) {
-            throw new JkException(e);
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             doReleaseConnection(con);
         }
@@ -361,7 +362,7 @@ public class DataMapper {
             int maxDepth = JkBeanUtils.getMaxDepth(classType);
             return queryForObject(sql, classType, 1, maxDepth, id);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             doReleaseConnection(con);
         }
@@ -394,7 +395,7 @@ public class DataMapper {
             ps.close();
             return n;
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             doReleaseConnection(con);
         }
@@ -421,7 +422,7 @@ public class DataMapper {
             ps.close();
             return n;
         } catch (Exception e) {
-            throw new JkException(e);
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             doReleaseConnection(con);
         }
@@ -464,7 +465,7 @@ public class DataMapper {
             st.close();
             return batch;
         } catch (Exception e) {
-            throw new JkException(e);
+            throw ExceptionUtils.runtimeException(e);
         } finally {
             doReleaseConnection(con);
         }
@@ -588,7 +589,7 @@ public class DataMapper {
     public static String createPageSql(String dbType, String sql, int page, int rows, List<Object> params) {
         int beginNum = (page - 1) * rows;
         if (JkBeanUtils.isBlank(dbType)) {
-            throw new RuntimeException("(数据库类型:dbType) 没有设置,请检查配置文件");
+            throw new JkException("(数据库类型:dbType) 没有设置,请检查配置文件");
         }
         if (dbType.indexOf(DATABSE_TYPE_MYSQL) > -1) {
             sql = MessageFormat.format(MYSQL_SQL, sql);
@@ -682,7 +683,7 @@ public class DataMapper {
     private Object[] getTableKey(Class<?> classType) {
         Object[] key = SqlUtils.getTableKey(classType);
         if (key == null) {
-            throw new RuntimeException(classType.getPackage() + classType.getName() + "no  @key annotation ");
+            throw new JkException(classType.getPackage() + classType.getName() + "no  @key annotation ");
         }
         return key;
     }
