@@ -146,7 +146,7 @@ public class JkBeanUtils {
                     }
                     StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < lv.size(); i++) {
-                        if(i > 0){
+                        if (i > 0) {
                             sb.append(",");
                         }
                         sb.append(lv.get(i));
@@ -225,13 +225,10 @@ public class JkBeanUtils {
                     field.set(o, value);
                 }
             }
-            return o;
         } catch (Exception e) {
-            if (e instanceof JkException) {
-                throw (JkException) e;
-            }
-            throw new JkException(o.getClass().getName() + POINT + property + " set error ", e);
+            logger.warn(e.getMessage());
         }
+        return o;
     }
 
     /**

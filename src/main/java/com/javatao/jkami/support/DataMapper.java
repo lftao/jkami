@@ -558,16 +558,17 @@ public class DataMapper {
         String sqlParam = SqlUtils.getSearchParames(classType, page, params);
         sql += sqlParam;
         String pageSql = createPageSql(dbType, sql, page.getPage(), page.getSize(), params);
-        String countSql = MessageFormat.format(COUNT_SQL, sql);
-        //
         int maxDepth = JkBeanUtils.getMaxDepth(classType);
         List<T> result = query(pageSql, new BeanListHandle<>(classType, 1, maxDepth), params);
-        params.remove(params.size() - 1);
-        params.remove(params.size() - 1);
-        //
-        Long total = query(countSql, new NumberHandle<>(), params);
         page.setRows(result);
-        page.setTotal(total);
+        params.remove(params.size() - 1);
+        params.remove(params.size() - 1);
+        //非分页
+        if(page.getSize()!=Integer.MAX_VALUE){
+            String countSql = MessageFormat.format(COUNT_SQL, sql);
+            Long total = query(countSql, new NumberHandle<>(), params);
+            page.setTotal(total);
+        }
         return page;
     }
 
