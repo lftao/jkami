@@ -631,10 +631,6 @@ public class DataMapper {
         if (k != null && k.length > 0) {
             key = k[0];
         }
-        // 非 别名参数 sql 直接解析${...}
-        if (sqlParamsMap != null && !sqlParamsMap.isEmpty()) {
-            executeSql = FKParse.parseTemplateContent(executeSql, sqlParamsMap);
-        }
         Matcher m = pat.matcher(executeSql);
         while (m.find()) {
             String match = m.group();
@@ -651,6 +647,10 @@ public class DataMapper {
             if (logger.isDebugEnabled()) {
                 logger.debug(" Match [" + match + "] at positions " + m.start() + "-" + (m.end() - 1) + " value:" + val);
             }
+        }
+        // 非 别名参数 sql 直接解析${...}
+        if (sqlParamsMap != null && !sqlParamsMap.isEmpty()) {
+            executeSql = FKParse.parseTemplateContent(executeSql, sqlParamsMap);
         }
         return executeSql;
     }
