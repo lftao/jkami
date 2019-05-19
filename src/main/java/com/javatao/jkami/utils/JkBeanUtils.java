@@ -481,6 +481,9 @@ public class JkBeanUtils {
             if (s.indexOf("java.util") > -1) {
                 return false;
             }
+            if (s.indexOf("java.math") > -1) {
+                return false;
+            }
             return true;
         } catch (Exception e) {
             e.printStackTrace();
