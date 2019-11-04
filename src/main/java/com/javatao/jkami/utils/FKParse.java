@@ -9,6 +9,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.javatao.jkami.JkException;
+import com.javatao.jkami.support.ObjectWrapper;
 
 import freemarker.cache.StringTemplateLoader;
 import freemarker.ext.beans.BeansWrapper;
@@ -40,6 +41,7 @@ public class FKParse {
     // 使用内嵌的(?ms)打开单行和多行模式
     private final static Pattern p = Pattern.compile("(?ms)/\\*.*?\\*/|^\\s*//.*?$");
     static {
+        ObjectWrapper ow = new ObjectWrapper(Configuration.VERSION_2_3_23);
         _tplConfig.setClassForTemplateLoading(FKParse.class, "/");
         _tplConfig.setLocale(Locale.CHINESE);
         _tplConfig.setLocalizedLookup(false);
@@ -48,6 +50,7 @@ public class FKParse {
         _tplConfig.setDateFormat(dateFormat);
         _tplConfig.setDateTimeFormat(dateFormat);
         _tplConfig.setTagSyntax(Configuration.AUTO_DETECT_TAG_SYNTAX);
+        _tplConfig.setObjectWrapper(ow);
         // --
         _sqlConfig.setTemplateLoader(stringTemplateLoader);
         _sqlConfig.setNumberFormat("#");
@@ -57,6 +60,7 @@ public class FKParse {
         _sqlConfig.setDateFormat(dateFormat);
         _sqlConfig.setDateTimeFormat(dateFormat);
         _sqlConfig.setTagSyntax(Configuration.AUTO_DETECT_TAG_SYNTAX);
+        _sqlConfig.setObjectWrapper(ow);
     }
 
     /**
@@ -96,6 +100,22 @@ public class FKParse {
         } catch (Exception e) {
             logger.error("模板 " + tplName, e);
             throw new RuntimeException("解析SQL模板异常", e);
+        }
+    }
+
+    /**
+     * 获取模板原始字符串
+     *
+     * @param tplName
+     *            模板名
+     * @return 结果字符串
+     */
+    public static String getTemplateaString(String tplName) {
+        try {
+            Template mytpl = _tplConfig.getTemplate(tplName, ENCODE);
+            return mytpl.toString();
+        } catch (Exception e) {
+            throw new RuntimeException("模板 " + tplName, e);
         }
     }
 

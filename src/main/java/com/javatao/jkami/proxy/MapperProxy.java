@@ -147,7 +147,7 @@ public class MapperProxy<T> extends KaMiDaoImpl<T> implements InvocationHandler,
             String sql = FKParse.parseTemplate(sqlTempletPath, paramMap);
             return runQuery(method, paramMap, sql);
         } else {
-            throw new JkException(sqlTempletPath + " not find ");
+            throw new JkException(sqlTempletPath + " not found ");
         }
     }
 
