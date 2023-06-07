@@ -43,7 +43,6 @@ public class DataMapper {
     private static final Log logger = LogFactory.getLog(DataMapper.class);
     private static final String DEFAULT_BEAN = "this";
     private static final String EMPTY = "";
-    private static final String SEMICOLON = ";";
     /**
      * 数据库类型
      */
@@ -440,10 +439,11 @@ public class DataMapper {
     public Object executeBatchUpdate(String sqls, Object... params) {
         Connection con = getCon();
         try {
-            if (sqls.indexOf(SEMICOLON) == -1) {
+        	String batchSplit = RunConfing.getConfig().getBatchSplit();
+            if (sqls.indexOf(batchSplit) == -1) {
                 return executeUpdate(sqls, params);
             }
-            String[] sqlss = sqls.replaceAll("\r|\n", EMPTY).split(SEMICOLON);
+            String[] sqlss = sqls.replaceAll("\r|\n", EMPTY).split(batchSplit);
             int length = sqlss.length;
             int runsize = sqlss.length;
             Statement st = con.createStatement();

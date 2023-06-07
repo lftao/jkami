@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.datasource.DataSourceUtils;
 
@@ -20,11 +21,12 @@ public class RunConfing {
     /** 数据源 */
     private transient DataSource dataSource;
     /** 懒加载 */
-    private transient Boolean lazybean;
+    private transient Boolean lazybean=false;
     /** sql 模板路径 */
     private transient String sqlPath;
     private transient String dataSourceId;
     private transient String mappingPath;
+    private transient String batchSplit=";";
 
     public String getDbType() {
         return dbType;
@@ -74,13 +76,22 @@ public class RunConfing {
         return mappingPath;
     }
 
-    public RunConfing setMappingPath(String mappingPath) {
+    public String getBatchSplit() {
+		return batchSplit;
+	}
+
+	public RunConfing setBatchSplit(String batchSplit) {
+		this.batchSplit = batchSplit;
+		return this;
+	}
+
+	public RunConfing setMappingPath(String mappingPath) {
         this.mappingPath = mappingPath;
         return this;
     }
 
     public void bind() {
-        bindConfing(this);
+    	config.set(this);
     }
 
     public static void clear() {
@@ -96,7 +107,13 @@ public class RunConfing {
     }
 
     public static void bindConfing(RunConfing config) {
-        RunConfing.config.set(config);
+    	RunConfing cg = RunConfing.config.get();
+    	RunConfing cfg = new RunConfing();
+    	BeanUtils.copyProperties(config, cfg);
+    	if(cg!=null) {
+    	   cfg.setBatchSplit(cg.getBatchSplit());
+    	}
+        RunConfing.config.set(cfg);
     }
 
     public Connection getConnection() {

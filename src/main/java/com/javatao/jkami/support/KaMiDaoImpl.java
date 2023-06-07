@@ -30,6 +30,7 @@ import com.javatao.jkami.utils.SqlUtils;
 public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAware {
     private Class<T> classType;
     private Class<?> mapperInterface;
+    private ApplicationContext applicationContext;
     /**
      * 运行时参数
      */
@@ -57,6 +58,16 @@ public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAw
     }
 
     public RunConfing getConfing() {
+    	if (confing != null) {
+            DataSource dataSource = confing.getDataSource();
+            if (dataSource == null) {
+                String dataSourceId = confing.getDataSourceId();
+                if (dataSourceId != null) {
+                    DataSource source = applicationContext.getBean(dataSourceId, DataSource.class);
+                    confing.setDataSource(source);
+                }
+            }
+        }
         return this.confing;
     }
 
@@ -154,16 +165,7 @@ public class KaMiDaoImpl<T> implements KaMiDaoInterface<T>, ApplicationContextAw
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        if (confing != null) {
-            DataSource dataSource = confing.getDataSource();
-            if (dataSource == null) {
-                String dataSourceId = confing.getDataSourceId();
-                if (dataSourceId != null) {
-                    DataSource source = applicationContext.getBean(dataSourceId, DataSource.class);
-                    confing.setDataSource(source);
-                }
-            }
-        }
+    	this.applicationContext = applicationContext;
     }
     
     public Class<?> getClassType() {
