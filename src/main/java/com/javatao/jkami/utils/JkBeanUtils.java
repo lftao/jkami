@@ -8,7 +8,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Blob;
 import java.sql.Clob;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -186,7 +192,17 @@ public class JkBeanUtils {
                 } catch (Exception e) {
                     logger.warn(e);
                 }
-            } else {
+            } else if (type.isAssignableFrom(Date.class)) {
+            	if (value instanceof LocalDateTime) {
+            		ZonedDateTime zonedDateTime = ((LocalDateTime)value).atZone(ZoneId.systemDefault());
+            		Instant instant = zonedDateTime.toInstant();
+            		Date date = Date.from(instant);
+            		field.set(o, date);
+            	} else if(value instanceof LocalDate) {
+            		Date date = Date.from(((LocalDate)value).atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+            		field.set(o, date);
+            	}
+        	} else {
                 if (value instanceof List) {
                     List<?> lv = (List<?>) value;
                     if (lv == null || lv.size() == 0) {
